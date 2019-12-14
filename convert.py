@@ -27,53 +27,62 @@ def cleanPath(path):
     return path
 
 
-generalDictionary = {
+generalRenames = {
     "AudioFile": "AudioFilename",
     "SongPreviewTime": "PreviewTime"
 }
 
-defaultGeneral = """AudioLeadIn: 0
-Countdown: 0
-SampleSet: Soft
-StackLeniency: 0.7
-Mode: 3
-LetterboxInBreaks: 0
-SpecialStyle: 0
-WidescreenStoryboard: 0"""
+generalDefaultValues = {
+    "AudioLeadIn": 0,
+    "Countdown": 0,
+    "SampleSet": "Soft",
+    "StackLeniency": 0.7,
+    "Mode": 3,
+    "LetterboxInBreaks": 0,
+    "SpecialStyle": 0,
+    "WidescreenStoryboard": 0
+}
 
 
 def convertGeneral(qua):
     # AudioFilename, AudioLeadIn, AudioHash, PreviewTime, Countdown, SampleSet, StackLeniency, Mode, LetterboxInBreaks, StoryFireInFront, UseSkinSprites, AlwaysShowPlayfield, OverlayPosition, SkinPreference, EpilepsyWarning, CountdownOffset, SpecialStyle, WidescreenStoryboard, SamplesMatchPlaybackRate
     lines = ["[General]"]
-    for element in generalDictionary:
-        lines.append(generalDictionary[element] +
-                     ": " + str(qua[element]))
-    lines.append(defaultGeneral)
+
+    for element in generalRenames:
+        lines.append(f"{generalRenames[element]}: {qua[element]}")
+    for attribute in generalDefaultValues:
+        lines.append(f"{attribute}: {generalDefaultValues[attribute]}")
+
     return "\n".join(lines)
 
 
-defaultEditor = """Bookmarks:
-DistanceSpacing: 1.5
-BeatDivisor: 4
-GridSize: 4
-TimelineZoom: 2.5"""
+editorDefaultValues = {
+    "Bookmarks": "",
+    "DistanceSpacing": 1.5,
+    "BeatDivisor": 4,
+    "GridSize": 4,
+    "TimelineZoom": 2.5
+}
 
 
 def convertEditor(qua):
     # Bookmarks, DistanceSpacing, BeatDivisor, GridSize, TimelineZoom
     lines = ["[Editor]"]
-    lines.append(defaultEditor)
+    for attribute in editorDefaultValues:
+        lines.append(f"{attribute}: {editorDefaultValues[attribute]}")
     return "\n".join(lines)
 
 
 # qua attribute name -> osu attribute name
-metadataDictionary = {
+metadataRenames = {
     "DifficultyName": "Version",
     "SongPreviewTime": "PreviewTime"
 }
 
-defaultMetadata = """BeatmapID:0
-BeatmapSetID:-1"""
+metadataDefaultValues = {
+    "BeatmapID": 0,
+    "BeatmapSetID": -1
+}
 
 
 def convertMetadata(qua):
@@ -81,54 +90,57 @@ def convertMetadata(qua):
 
     for element in qua:
         if element in ["AudioFile", "Artist", "Title", "Source", "Tags", "Creator"]:
-            lines.append(element + ":" + qua[element])
+            lines.append(f"{element}:{qua[element]}")
             if element in ["Artist", "Title"]:
-                lines.append(element + "Unicode:" + qua[element])
-        elif element in metadataDictionary:
-            lines.append(metadataDictionary[element] +
-                         ":" + str(qua[element]))
+                lines.append(f"{element}Unicode:{qua[element]}")
+        elif element in metadataRenames:
+            lines.append(f"{metadataRenames[element]}:{qua[element]}")
 
-    lines.append(defaultMetadata)
+    for attribute in metadataDefaultValues:
+        lines.append(f"{attribute}:{metadataDefaultValues[attribute]}")
+
     return "\n".join(lines)
 
 
-defaultDifficulty = """HPDrainRate:8
-OverallDifficulty:8
-ApproachRate:5
-SliderMultiplier:1.4
-SliderTickRate:1"""
+difficultyDefaultValues = {
+    "HPDrainRate": 8,
+    "OverallDifficulty": 8,
+    "ApproachRate": 5,
+    "SliderMultiplier": 1.4,
+    "SliderTickRate": 1
+}
 
 
 def convertDifficulty(qua):
     # HPDrainRate, CircleSize, OverallDifficulty, ApproachRate, SliderMultiplier, SliderTickrate
     lines = ["[Difficulty]"]
     lines.append("CircleSize:" + qua["Mode"][-1:])
-    lines.append(defaultDifficulty)
+    for attribute in difficultyDefaultValues:
+        lines.append(f"{attribute}: {difficultyDefaultValues[attribute]}")
     return "\n".join(lines)
 
 
 def convertEvents(qua):
     # Background syntax: 0,0,filename,0,0
     lines = ["[Events]"]
-    lines.append('0,0,"' + qua["BackgroundFile"] + '",0,0')
+    lines.append(f'0,0,"{qua["BackgroundFile"]}",0,0')
     return "\n".join(lines)
 
 
 def convertTimingPoints(qua):
     # time,beatLength,meter,sampleSet,sampleIndex,volume,uninherited,effects
     lines = ["[TimingPoints]"]
+
     for timingPoint in qua["TimingPoints"]:
         startTime = timingPoint["StartTime"]
         bpm = timingPoint["Bpm"]
         msPerBeat = 60000/bpm
-        array = [startTime, msPerBeat, 4, 0, 0, 0, 1, 0]
-        lines.append(",".join([str(element) for element in array]))
+        lines.append(f"{startTime},{msPerBeat},4,0,0,0,1,0")
 
     for sv in qua["SliderVelocities"]:
         startTime = sv["StartTime"]
         multiplier = -100/sv["Multiplier"]
-        array = [startTime, multiplier, 0, 0, 0, 0, 0]
-        lines.append(",".join([str(element) for element in array]))
+        lines.append(f"{startTime},{multiplier},0,0,0,0,0")
 
     return "\n".join(lines)
 
@@ -146,22 +158,20 @@ def convertHitObjects(qua):
         x = math.floor((lane / columns) * 512) - 64
         y = 192
 
-        if not "EndTime" in hitObject:  # normal note
-            array = [x, y, time, 1, 0, "0:0:0:0:"]
-
+        if "EndTime" not in hitObject:  # normal note
+            line = f"{x},{y},{time},1,0,0:0:0:0:"
         else:  # long note
             # x,y,time,type,hitSound,endTime,hitSample
             endTime = hitObject["EndTime"]
-            array = [x, y, time, 128, 0, str(endTime) + ":0:0:0:0:"]
+            line = f"{x},{y},{time},128,0,{endTime}:0:0:0:0:"
 
-        lines.append(",".join([str(element) for element in array]))
+        lines.append(line)
 
     return "\n".join(lines)
 
 
 def convertQua2Osu(fileContent):
     qua = loadQua(fileContent)
-
     osu = "\n\n".join(
         [
             "// This map was converted using qua2osu",
@@ -180,14 +190,15 @@ def convertQua2Osu(fileContent):
 
 
 def convertMapset(path):
-    folderName = os.path.basename(path).split(".")[0]
-    outputPath = outputFolder + "/" + folderName
+    # prefixing with q to prevent osu from showing the wrong preview backgrounds
+    folderName = "q" + os.path.basename(path).split(".")[0]
+    outputPath = os.path.join(outputFolder, folderName)
 
     with zipfile.ZipFile(path, "r") as oldDir:
         oldDir.extractall(outputPath)
 
     for file in os.listdir(outputPath):
-        filePath = outputPath + "/" + file
+        filePath = os.path.join(outputPath, file)
         if file.endswith(".qua"):
             with open(filePath, "r") as openedFile:
                 fileContent = openedFile.read()
@@ -201,7 +212,7 @@ def convertMapset(path):
             for file in files:
                 newDir.write(os.path.join(root, file), file)
 
-    print("Finished converting " + path)
+    print(f"Finished converting {path}")
 
 
 for file in os.listdir(inputFolder):
@@ -209,4 +220,4 @@ for file in os.listdir(inputFolder):
         convertMapset(inputFolder + "/" + file)
 
 end = time.time()
-print("Execution Time: " + str(end-start) + " seconds")
+print(f"Execution Time: {end-start} seconds")
