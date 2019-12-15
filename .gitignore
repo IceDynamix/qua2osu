@@ -1,5 +1,3 @@
-output/
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -126,6 +124,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 .vscode/settings.json
-input/473.qp
-input/542.qp
-input/636.qp
+
+# Custom
+output/
+input/

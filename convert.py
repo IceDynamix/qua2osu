@@ -1,9 +1,10 @@
-import yaml
-import time
 import math
 import os
 import re
+import time
 import zipfile
+
+import yaml
 
 # global variables
 inputFolder = "input"
@@ -14,6 +15,8 @@ start = time.time()
 
 if not os.path.exists(outputFolder):
     os.makedirs(outputFolder)
+if not os.path.exists(inputFolder):
+    os.makedirs(inputFolder)
 
 
 def loadQua(fileContent):
@@ -130,29 +133,39 @@ def convertEvents(qua):
 def convertTimingPoints(qua):
     # time, beatLength, meter, sampleSet, sampleIndex, volume, uninherited, effects
     lines = ["[TimingPoints]"]
+    defaultHsVolume = 25
 
     for timingPoint in qua["TimingPoints"]:
         # if any value is 0 then quaver doesnt print it in the qua
-        startTime = qua.get(sv["StartTime"], 0)
-        bpm = qua.get(timingPoint["Bpm"], 0)
-        if timingPoint["Bpm"] <= 0:  # 0.0x bpm or negative bpm
+        startTime = timingPoint.get("StartTime", 0)
+        bpm = timingPoint.get("Bpm", 0)
+        if bpm <= 0:  # 0.0x bpm or negative bpm
             msPerBeat = -10e10  # substituting with very low bpm value
         else:
             msPerBeat = 60000/bpm
-        lines.append(f"{startTime},{msPerBeat},4,0,0,0,1,0")
+        lines.append(f"{startTime},{msPerBeat},4,0,0,{defaultHsVolume},1,0")
 
     for sv in qua["SliderVelocities"]:
-        startTime = qua.get(sv["StartTime"], 0)
-        multiplier = qua.get(sv["Multiplier"], 0)
+        startTime = sv.get("StartTime", 0)
+        multiplier = sv.get("Multiplier", 0)
         if multiplier <= 0:  # 0.0x sv or negative sv
             svValue = -10e10  # substituting with very low sv value
         else:
-            svValue = -100/sv["Multiplier"]
-        lines.append(f"{startTime},{svValue},0,0,0,0,0")
+            svValue = -100/multiplier
+        lines.append(f"{startTime},{svValue},0,0,0,{defaultHsVolume},0")
+
 
     # osu doesnt care if the section is sorted chronologically or not so im not doing it
 
     return "\n".join(lines)
+
+
+hitSoundsDict = {
+    "Normal": 1,
+    "Whistle": 2,
+    "Finish": 4,
+    "Clap": 8
+}
 
 
 def convertHitObjects(qua):
@@ -166,13 +179,19 @@ def convertHitObjects(qua):
         lane = hitObject.get("Lane", 0)
         x = math.floor((lane / columns) * 512) - 64
         y = 192
+        hsBits = 0
+
+        if "HitSound" in hitObject and not isinstance(hitObject["HitSound"], int):
+            hitSounds = hitObject["HitSound"].split(", ")
+            for hs in hitSounds:
+                hsBits += hitSoundsDict[hs]
 
         if "EndTime" not in hitObject:  # normal note
-            line = f"{x},{y},{time},1,0,0:0:0:0:"
+            line = f"{x},{y},{time},1,{hsBits},0:0:0:0:"
         else:  # long note
             # x,y,time,type,hitSound,endTime,hitSample
             endTime = hitObject["EndTime"]
-            line = f"{x},{y},{time},128,0,{endTime}:0:0:0:0:"
+            line = f"{x},{y},{time},128,{hsBits},{endTime}:0:0:0:0:"
 
         lines.append(line)
 
@@ -181,19 +200,17 @@ def convertHitObjects(qua):
 
 def convertQua2Osu(fileContent):
     qua = loadQua(fileContent)
-    osu = "\n\n".join(
-        [
-            "// This map was converted using qua2osu",
-            "osu file format v14",
-            convertGeneral(qua),
-            convertEditor(qua),
-            convertMetadata(qua),
-            convertDifficulty(qua),
-            convertEvents(qua),
-            convertTimingPoints(qua),
-            convertHitObjects(qua)
-        ]
-    )
+    osu = "\n\n".join([
+        "// This map was converted using qua2osu",
+        "osu file format v14",
+        convertGeneral(qua),
+        convertEditor(qua),
+        convertMetadata(qua),
+        convertDifficulty(qua),
+        convertEvents(qua),
+        convertTimingPoints(qua),
+        convertHitObjects(qua)
+    ])
 
     return osu
 
