@@ -6,17 +6,8 @@ import zipfile
 
 import yaml
 
-# global variables
-inputFolder = "input"
-outputFolder = "output"
+
 regexIllegalCharacters = re.compile(r"[<>:\"/\\|\?\*]")
-
-start = time.time()
-
-if not os.path.exists(outputFolder):
-    os.makedirs(outputFolder)
-if not os.path.exists(inputFolder):
-    os.makedirs(inputFolder)
 
 
 def loadQua(fileContent):
@@ -143,7 +134,8 @@ def convertTimingPoints(qua):
             msPerBeat = -10e10  # substituting with very low bpm value
         else:
             msPerBeat = 60000/bpm
-        lines.append(f"{startTime},{msPerBeat},4,0,0,{defaultHsVolume},1,0")
+        lines.append(
+            f"{startTime},{msPerBeat},4,0,0,{defaultHsVolume},1,0")
 
     for sv in qua["SliderVelocities"]:
         startTime = sv.get("StartTime", 0)
@@ -153,7 +145,6 @@ def convertTimingPoints(qua):
         else:
             svValue = -100/multiplier
         lines.append(f"{startTime},{svValue},0,0,0,{defaultHsVolume},0")
-
 
     # osu doesnt care if the section is sorted chronologically or not so im not doing it
 
@@ -215,7 +206,7 @@ def convertQua2Osu(fileContent):
     return osu
 
 
-def convertMapset(path):
+def convertMapset(path, outputFolder):
     # prefixing with q to prevent osu from showing the wrong preview backgrounds
     folderName = "q" + os.path.basename(path).split(".")[0]
     outputPath = os.path.join(outputFolder, folderName)
@@ -241,9 +232,18 @@ def convertMapset(path):
     print(f"Finished converting {path}")
 
 
-for file in os.listdir(inputFolder):
-    if file.endswith(".qp"):
-        convertMapset(inputFolder + "/" + file)
+def convertFolder(inputFolder, outputFolder):
+    if not os.path.exists(inputFolder):
+        os.makedirs(inputFolder)
+    if not os.path.exists(outputFolder):
+        os.makedirs(outputFolder)
 
-end = time.time()
-print(f"Execution Time: {end-start} seconds")
+    start = time.time()
+    for file in os.listdir(inputFolder):
+        if file.endswith(".qp"):
+            convertMapset(os.path.join(inputFolder, file), outputFolder)
+    end = time.time()
+    print(f"Execution Time: {end-start} seconds")
+
+if __name__ == '__main__':
+    convertFolder("samples", "output")
