@@ -8,7 +8,7 @@ import zipfile
 # global variables
 inputFolder = "input"
 outputFolder = "output"
-regexIllegalCharacters = re.compile(r"[<>:\"/\\|\?\*]", re.IGNORECASE)
+regexIllegalCharacters = re.compile(r"[<>:\"/\\|\?\*]")
 
 start = time.time()
 
@@ -57,7 +57,7 @@ def convertGeneral(qua):
 
 
 editorDefaultValues = {
-    "Bookmarks": "",
+    "Bookmarks": "",  # if i set this to None then it will print "None" in the .osu, which is why i set this to ""
     "DistanceSpacing": 1.5,
     "BeatDivisor": 4,
     "GridSize": 4,
@@ -128,19 +128,29 @@ def convertEvents(qua):
 
 
 def convertTimingPoints(qua):
-    # time,beatLength,meter,sampleSet,sampleIndex,volume,uninherited,effects
+    # time, beatLength, meter, sampleSet, sampleIndex, volume, uninherited, effects
     lines = ["[TimingPoints]"]
 
     for timingPoint in qua["TimingPoints"]:
-        startTime = timingPoint["StartTime"]
-        bpm = timingPoint["Bpm"]
-        msPerBeat = 60000/bpm
+        # if any value is 0 then quaver doesnt print it in the qua
+        startTime = qua.get(sv["StartTime"], 0)
+        bpm = qua.get(timingPoint["Bpm"], 0)
+        if timingPoint["Bpm"] <= 0:  # 0.0x bpm or negative bpm
+            msPerBeat = -10e10  # substituting with very low bpm value
+        else:
+            msPerBeat = 60000/bpm
         lines.append(f"{startTime},{msPerBeat},4,0,0,0,1,0")
 
     for sv in qua["SliderVelocities"]:
-        startTime = sv["StartTime"]
-        multiplier = -100/sv["Multiplier"]
-        lines.append(f"{startTime},{multiplier},0,0,0,0,0")
+        startTime = qua.get(sv["StartTime"], 0)
+        multiplier = qua.get(sv["Multiplier"], 0)
+        if multiplier <= 0:  # 0.0x sv or negative sv
+            svValue = -10e10  # substituting with very low sv value
+        else:
+            svValue = -100/sv["Multiplier"]
+        lines.append(f"{startTime},{svValue},0,0,0,0,0")
+
+    # osu doesnt care if the section is sorted chronologically or not so im not doing it
 
     return "\n".join(lines)
 
@@ -151,10 +161,9 @@ def convertHitObjects(qua):
 
     for hitObject in qua["HitObjects"]:
 
-        # x,y,time,type,hitSound,objectParams,hitSample
-        # default to 0 when start time is not there
+        # x, y, time, type, hitSound, objectParams, hitSample
         time = hitObject.get("StartTime", 0)
-        lane = hitObject["Lane"]
+        lane = hitObject.get("Lane", 0)
         x = math.floor((lane / columns) * 512) - 64
         y = 192
 
