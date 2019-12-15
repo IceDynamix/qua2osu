@@ -1,16 +1,17 @@
-import yaml
-import time
 import math
 import os
 import re
+import time
 import zipfile
+
+import yaml
 
 # global variables
 inputFolder = "input"
 outputFolder = "output"
 regexIllegalCharacters = re.compile(r"[<>:\"/\\|\?\*]", re.IGNORECASE)
 
-start = time.time()
+start = time()
 
 if not os.path.exists(outputFolder):
     os.makedirs(outputFolder)
@@ -145,6 +146,14 @@ def convertTimingPoints(qua):
     return "\n".join(lines)
 
 
+hitSoundsDict = {
+    "Normal": 1 << 0,  # 1
+    "Whistle": 1 << 1,  # 2
+    "Finish": 1 << 2,  # 4
+    "Clap": 1 << 3  # 8
+}
+
+
 def convertHitObjects(qua):
     lines = ["[HitObjects]"]
     columns = int(qua["Mode"][-1:])  # 4 for 4k, 7 for 7k
@@ -154,16 +163,23 @@ def convertHitObjects(qua):
         # x,y,time,type,hitSound,objectParams,hitSample
         # default to 0 when start time is not there
         time = hitObject.get("StartTime", 0)
-        lane = hitObject["Lane"]
+        lane = hitObject.get("Lane"], 0)
         x = math.floor((lane / columns) * 512) - 64
         y = 192
 
+        if "HitSounds" in hitObject:
+            hitSounds = ", ".split(hitObject["HitSounds"])
+            hsBits = sum([hitSoundsDict[hs] for hs in hitSoundsDict if hs in hitSounds])
+
+        else:
+            hsBits = 0
+
         if "EndTime" not in hitObject:  # normal note
-            line = f"{x},{y},{time},1,0,0:0:0:0:"
+            line = f"{x},{y},{time},1,{hsBits},0:0:0:0:"
         else:  # long note
             # x,y,time,type,hitSound,endTime,hitSample
             endTime = hitObject["EndTime"]
-            line = f"{x},{y},{time},128,0,{endTime}:0:0:0:0:"
+            line = f"{x},{y},{time},128,{hsBits},{endTime}:0:0:0:0:"
 
         lines.append(line)
 
@@ -219,5 +235,5 @@ for file in os.listdir(inputFolder):
     if file.endswith(".qp"):
         convertMapset(inputFolder + "/" + file)
 
-end = time.time()
+end = time()
 print(f"Execution Time: {end-start} seconds")
