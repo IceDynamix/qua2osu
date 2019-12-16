@@ -1,10 +1,10 @@
 import math
 import os
 import re
+import time
 import zipfile
 
 import yaml
-
 
 regexIllegalCharacters = re.compile(r"[<>:\"/\\|\?\*]")
 
@@ -197,8 +197,7 @@ def convertHitObjects(qua):
         y = 192
         hsBits = 0
 
-        if "HitSound" in hitObject
-        and not isinstance(hitObject["HitSound"], int):
+        if "HitSound" in hitObject and not isinstance(hitObject["HitSound"], int):
             hitSounds = hitObject["HitSound"].split(", ")
             for hs in hitSounds:
                 hsBits += hitSoundsDict[hs]
@@ -216,6 +215,10 @@ def convertHitObjects(qua):
 
 
 def convertQua2Osu(fileContent, options):
+    if options == None:
+        options = {
+
+        }
     qua = loadQua(fileContent)
     osu = "\n\n".join([
         "// This map was converted using qua2osu",
@@ -232,11 +235,19 @@ def convertQua2Osu(fileContent, options):
     return osu
 
 
-def convertMapset(path, outputFolder, options):
+def convertMapset(path, outputFolder, options=None):
     # prefixing with q_ to prevent osu
     # from showing the wrong preview backgrounds
     folderName = "q_" + os.path.basename(path).split(".")[0]
     outputPath = os.path.join(outputFolder, folderName)
+
+    if options == None:
+        options = {
+            "od": 8,
+            "hp": 8,
+            "hitSoundVolume": 20,
+            "sampleSet": "Soft"
+        }
 
     with zipfile.ZipFile(path, "r") as oldDir:
         oldDir.extractall(outputPath)
@@ -257,3 +268,30 @@ def convertMapset(path, outputFolder, options):
                 newDir.write(os.path.join(root, file), file)
 
     return
+
+
+if __name__ == '__main__':
+    inputPath = "samples"
+    outputPath = "output"
+    qpFilesInInputDir = []
+
+    for file in os.listdir(inputPath):
+        if file.endswith('.qp') and os.path.isfile(os.path.join(inputPath, file)):
+            qpFilesInInputDir.append(file)
+
+    numberOfQpFiles = len(qpFilesInInputDir)
+
+    if numberOfQpFiles == 0:
+        print("No mapsets found in " + inputPath)
+
+    else:
+        start = time.time()
+        for file in qpFilesInInputDir:
+            filePath = os.path.join(inputPath, file)
+            print(f"Converting {filePath}")
+            convertMapset(filePath, outputPath, None)
+
+        end = time.time()
+        timeElapsed = round(end-start, 2)
+        print(
+            f"Finished converting all mapsets, total time elapsed: {timeElapsed} seconds")
