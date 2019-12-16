@@ -6,17 +6,8 @@ import zipfile
 
 import yaml
 
-# global variables
-inputFolder = "input"
-outputFolder = "output"
+
 regexIllegalCharacters = re.compile(r"[<>:\"/\\|\?\*]")
-
-start = time.time()
-
-if not os.path.exists(outputFolder):
-    os.makedirs(outputFolder)
-if not os.path.exists(inputFolder):
-    os.makedirs(inputFolder)
 
 
 def loadQua(fileContent):
@@ -38,7 +29,6 @@ generalRenames = {
 generalDefaultValues = {
     "AudioLeadIn": 0,
     "Countdown": 0,
-    "SampleSet": "Soft",
     "StackLeniency": 0.7,
     "Mode": 3,
     "LetterboxInBreaks": 0,
@@ -47,10 +37,13 @@ generalDefaultValues = {
 }
 
 
-def convertGeneral(qua):
+def convertGeneral(qua, options):
     # AudioFilename, AudioLeadIn, AudioHash, PreviewTime, Countdown, SampleSet, StackLeniency, Mode, LetterboxInBreaks, StoryFireInFront, UseSkinSprites, AlwaysShowPlayfield, OverlayPosition, SkinPreference, EpilepsyWarning, CountdownOffset, SpecialStyle, WidescreenStoryboard, SamplesMatchPlaybackRate
     lines = ["[General]"]
 
+    # TODO sampleset
+    sampleSet = options["sampleSet"]
+    lines.append(f"SampleSet: {sampleSet}")
     for element in generalRenames:
         lines.append(f"{generalRenames[element]}: {qua[element]}")
     for attribute in generalDefaultValues:
@@ -106,18 +99,24 @@ def convertMetadata(qua):
 
 
 difficultyDefaultValues = {
-    "HPDrainRate": 8,
-    "OverallDifficulty": 8,
     "ApproachRate": 5,
     "SliderMultiplier": 1.4,
     "SliderTickRate": 1
 }
 
 
-def convertDifficulty(qua):
+def convertDifficulty(qua, options):
     # HPDrainRate, CircleSize, OverallDifficulty, ApproachRate, SliderMultiplier, SliderTickrate
     lines = ["[Difficulty]"]
-    lines.append("CircleSize:" + qua["Mode"][-1:])
+
+    keyCount = qua["Mode"][-1:]
+    od = options["od"]
+    hp = options["hp"]
+
+    lines.append(f"OverallDifficulty: {od}")
+    lines.append(f"CircleSize: {keyCount}")
+    lines.append(f"HPDrainRate: {hp}")
+
     for attribute in difficultyDefaultValues:
         lines.append(f"{attribute}: {difficultyDefaultValues[attribute]}")
     return "\n".join(lines)
@@ -130,10 +129,10 @@ def convertEvents(qua):
     return "\n".join(lines)
 
 
-def convertTimingPoints(qua):
+def convertTimingPoints(qua, options):
     # time, beatLength, meter, sampleSet, sampleIndex, volume, uninherited, effects
     lines = ["[TimingPoints]"]
-    defaultHsVolume = 25
+    hitSoundVolume = options["hitSoundVolume"]
 
     for timingPoint in qua["TimingPoints"]:
         # if any value is 0 then quaver doesnt print it in the qua
@@ -143,7 +142,8 @@ def convertTimingPoints(qua):
             msPerBeat = -10e10  # substituting with very low bpm value
         else:
             msPerBeat = 60000/bpm
-        lines.append(f"{startTime},{msPerBeat},4,0,0,{defaultHsVolume},1,0")
+        lines.append(
+            f"{startTime},{msPerBeat},4,0,0,{hitSoundVolume},1,0")
 
     for sv in qua["SliderVelocities"]:
         startTime = sv.get("StartTime", 0)
@@ -152,8 +152,7 @@ def convertTimingPoints(qua):
             svValue = -10e10  # substituting with very low sv value
         else:
             svValue = -100/multiplier
-        lines.append(f"{startTime},{svValue},0,0,0,{defaultHsVolume},0")
-
+        lines.append(f"{startTime},{svValue},0,0,0,{hitSoundVolume},0")
 
     # osu doesnt care if the section is sorted chronologically or not so im not doing it
 
@@ -198,24 +197,24 @@ def convertHitObjects(qua):
     return "\n".join(lines)
 
 
-def convertQua2Osu(fileContent):
+def convertQua2Osu(fileContent, options):
     qua = loadQua(fileContent)
     osu = "\n\n".join([
         "// This map was converted using qua2osu",
         "osu file format v14",
-        convertGeneral(qua),
+        convertGeneral(qua, options),
         convertEditor(qua),
         convertMetadata(qua),
-        convertDifficulty(qua),
+        convertDifficulty(qua, options),
         convertEvents(qua),
-        convertTimingPoints(qua),
+        convertTimingPoints(qua, options),
         convertHitObjects(qua)
     ])
 
     return osu
 
 
-def convertMapset(path):
+def convertMapset(path, outputFolder, options):
     # prefixing with q to prevent osu from showing the wrong preview backgrounds
     folderName = "q" + os.path.basename(path).split(".")[0]
     outputPath = os.path.join(outputFolder, folderName)
@@ -228,7 +227,7 @@ def convertMapset(path):
         if file.endswith(".qua"):
             with open(filePath, "r") as openedFile:
                 fileContent = openedFile.read()
-                osu = convertQua2Osu(fileContent)
+                osu = convertQua2Osu(fileContent, options)
                 with open(filePath.replace(".qua", ".osu"), "w+") as newFile:
                     newFile.write(osu)
             os.remove(filePath)
@@ -238,12 +237,4 @@ def convertMapset(path):
             for file in files:
                 newDir.write(os.path.join(root, file), file)
 
-    print(f"Finished converting {path}")
-
-
-for file in os.listdir(inputFolder):
-    if file.endswith(".qp"):
-        convertMapset(inputFolder + "/" + file)
-
-end = time.time()
-print(f"Execution Time: {end-start} seconds")
+    return
