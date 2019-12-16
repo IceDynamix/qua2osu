@@ -1,7 +1,6 @@
 import math
 import os
 import re
-import time
 import zipfile
 
 import yaml
@@ -38,10 +37,18 @@ generalDefaultValues = {
 
 
 def convertGeneral(qua, options):
-    # AudioFilename, AudioLeadIn, AudioHash, PreviewTime, Countdown, SampleSet, StackLeniency, Mode, LetterboxInBreaks, StoryFireInFront, UseSkinSprites, AlwaysShowPlayfield, OverlayPosition, SkinPreference, EpilepsyWarning, CountdownOffset, SpecialStyle, WidescreenStoryboard, SamplesMatchPlaybackRate
+    # AudioFilename, AudioLeadIn,
+    # AudioHash, PreviewTime,
+    # Countdown, SampleSet,
+    # StackLeniency, Mode,
+    # LetterboxInBreaks, StoryFireInFront,
+    # UseSkinSprites, AlwaysShowPlayfield,
+    # OverlayPosition, SkinPreference,
+    # EpilepsyWarning, CountdownOffset,
+    # SpecialStyle, WidescreenStoryboard,
+    # SamplesMatchPlaybackRate
     lines = ["[General]"]
 
-    # TODO sampleset
     sampleSet = options["sampleSet"]
     lines.append(f"SampleSet: {sampleSet}")
     for element in generalRenames:
@@ -53,7 +60,9 @@ def convertGeneral(qua, options):
 
 
 editorDefaultValues = {
-    "Bookmarks": "",  # if i set this to None then it will print "None" in the .osu, which is why i set this to ""
+    # if i set this to None then it will print
+    # "None" in the .osu, which is why i set this to ""
+    "Bookmarks": "",
     "DistanceSpacing": 1.5,
     "BeatDivisor": 4,
     "GridSize": 4,
@@ -62,7 +71,8 @@ editorDefaultValues = {
 
 
 def convertEditor(qua):
-    # Bookmarks, DistanceSpacing, BeatDivisor, GridSize, TimelineZoom
+    # Bookmarks, DistanceSpacing,
+    # BeatDivisor, GridSize, TimelineZoom
     lines = ["[Editor]"]
     for attribute in editorDefaultValues:
         lines.append(f"{attribute}: {editorDefaultValues[attribute]}")
@@ -92,7 +102,8 @@ def convertMetadata(qua):
         elif element in metadataRenames:
             lines.append(f"{metadataRenames[element]}:{qua[element]}")
         elif element == "Tags":
-            lines.append(f"Tags:Quaver {qua["Tags"]}")
+            tags = qua["Tags"]
+            lines.append(f"Tags:Quaver {tags}")
 
     for attribute in metadataDefaultValues:
         lines.append(f"{attribute}:{metadataDefaultValues[attribute]}")
@@ -108,7 +119,9 @@ difficultyDefaultValues = {
 
 
 def convertDifficulty(qua, options):
-    # HPDrainRate, CircleSize, OverallDifficulty, ApproachRate, SliderMultiplier, SliderTickrate
+    # HPDrainRate, CircleSize,
+    # OverallDifficulty, ApproachRate,
+    # SliderMultiplier, SliderTickrate
     lines = ["[Difficulty]"]
 
     keyCount = qua["Mode"][-1:]
@@ -132,7 +145,8 @@ def convertEvents(qua):
 
 
 def convertTimingPoints(qua, options):
-    # time, beatLength, meter, sampleSet, sampleIndex, volume, uninherited, effects
+    # time, beatLength, meter, sampleSet,
+    # sampleIndex, volume, uninherited, effects
     lines = ["[TimingPoints]"]
     hitSoundVolume = options["hitSoundVolume"]
 
@@ -156,7 +170,8 @@ def convertTimingPoints(qua, options):
             svValue = -100/multiplier
         lines.append(f"{startTime},{svValue},0,0,0,{hitSoundVolume},0")
 
-    # osu doesnt care if the section is sorted chronologically or not so im not doing it
+    # osu doesnt care if the section is sorted
+    # chronologically or not so im not doing it
 
     return "\n".join(lines)
 
@@ -176,23 +191,24 @@ def convertHitObjects(qua):
     for hitObject in qua["HitObjects"]:
 
         # x, y, time, type, hitSound, objectParams, hitSample
-        time = hitObject.get("StartTime", 0)
+        startTime = hitObject.get("StartTime", 0)
         lane = hitObject.get("Lane", 0)
         x = math.floor((lane / columns) * 512) - 64
         y = 192
         hsBits = 0
 
-        if "HitSound" in hitObject and not isinstance(hitObject["HitSound"], int):
+        if "HitSound" in hitObject
+        and not isinstance(hitObject["HitSound"], int):
             hitSounds = hitObject["HitSound"].split(", ")
             for hs in hitSounds:
                 hsBits += hitSoundsDict[hs]
 
         if "EndTime" not in hitObject:  # normal note
-            line = f"{x},{y},{time},1,{hsBits},0:0:0:0:"
+            line = f"{x},{y},{startTime},1,{hsBits},0:0:0:0:"
         else:  # long note
             # x,y,time,type,hitSound,endTime,hitSample
             endTime = hitObject["EndTime"]
-            line = f"{x},{y},{time},128,{hsBits},{endTime}:0:0:0:0:"
+            line = f"{x},{y},{startTime},128,{hsBits},{endTime}:0:0:0:0:"
 
         lines.append(line)
 
@@ -217,7 +233,8 @@ def convertQua2Osu(fileContent, options):
 
 
 def convertMapset(path, outputFolder, options):
-    # prefixing with q_ to prevent osu from showing the wrong preview backgrounds
+    # prefixing with q_ to prevent osu
+    # from showing the wrong preview backgrounds
     folderName = "q_" + os.path.basename(path).split(".")[0]
     outputPath = os.path.join(outputFolder, folderName)
 
