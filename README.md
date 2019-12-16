@@ -30,10 +30,10 @@ download the lastest release from [here](https://github.com/IceDynamix/qua2osu/r
 
 ## notes
 
-if you don't select any paths then it will choose `.\samples` as the default input path and `.\output` as the default output path
+if you don't select any paths then it will choose `.\samples` as the default input path and `.\output` as the default output path  
 please report issues [here on github](https://github.com/IceDynamix/qua2osu/issues) thanks
 
 ## referenced games
 
-[**Quaver**](https://quavergame.com/)
-[**osu!**](https://osu.ppy.sh/)
+* [**Quaver**](https://quavergame.com/)  
+* [**osu!**](https://osu.ppy.sh/)
