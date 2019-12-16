@@ -9,12 +9,12 @@ import yaml
 regexIllegalCharacters = re.compile(r"[<>:\"/\\|\?\*]")
 
 
-def loadQua(fileContent):
+def loadQua(fileContent: str) -> object:
     qua = yaml.safe_load(fileContent)
     return qua
 
 
-def cleanPath(path):
+def cleanPath(path: str) -> str:
     path = regexIllegalCharacters.sub("", path)
     path = path.replace(" ", "_")
     return path
@@ -36,7 +36,7 @@ generalDefaultValues = {
 }
 
 
-def convertGeneral(qua, options):
+def convertGeneral(qua: object, options: object) -> str:
     # AudioFilename, AudioLeadIn,
     # AudioHash, PreviewTime,
     # Countdown, SampleSet,
@@ -70,7 +70,7 @@ editorDefaultValues = {
 }
 
 
-def convertEditor(qua):
+def convertEditor(qua: object) -> str:
     # Bookmarks, DistanceSpacing,
     # BeatDivisor, GridSize, TimelineZoom
     lines = ["[Editor]"]
@@ -91,7 +91,7 @@ metadataDefaultValues = {
 }
 
 
-def convertMetadata(qua):
+def convertMetadata(qua: object) -> str:
     lines = ["[Metadata]"]
 
     for element in qua:
@@ -118,7 +118,7 @@ difficultyDefaultValues = {
 }
 
 
-def convertDifficulty(qua, options):
+def convertDifficulty(qua: object, options: object) -> str:
     # HPDrainRate, CircleSize,
     # OverallDifficulty, ApproachRate,
     # SliderMultiplier, SliderTickrate
@@ -137,14 +137,14 @@ def convertDifficulty(qua, options):
     return "\n".join(lines)
 
 
-def convertEvents(qua):
+def convertEvents(qua: object) -> str:
     # Background syntax: 0,0,filename,0,0
     lines = ["[Events]"]
     lines.append(f'0,0,"{qua["BackgroundFile"]}",0,0')
     return "\n".join(lines)
 
 
-def convertTimingPoints(qua, options):
+def convertTimingPoints(qua: object, options: object) -> str:
     # time, beatLength, meter, sampleSet,
     # sampleIndex, volume, uninherited, effects
     lines = ["[TimingPoints]"]
@@ -184,7 +184,7 @@ hitSoundsDict = {
 }
 
 
-def convertHitObjects(qua):
+def convertHitObjects(qua: object) -> str:
     lines = ["[HitObjects]"]
     columns = int(qua["Mode"][-1:])  # 4 for 4k, 7 for 7k
 
@@ -214,7 +214,7 @@ def convertHitObjects(qua):
     return "\n".join(lines)
 
 
-def convertQua2Osu(fileContent, options):
+def convertQua2Osu(fileContent: str, options: object) -> str:
     if options == None:
         options = {
 
@@ -235,13 +235,13 @@ def convertQua2Osu(fileContent, options):
     return osu
 
 
-def convertMapset(path, outputFolder, options=None):
+def convertMapset(path: str, outputFolder: str, options=None) -> None:
     # prefixing with q_ to prevent osu
     # from showing the wrong preview backgrounds
     folderName = "q_" + os.path.basename(path).split(".")[0]
     outputPath = os.path.join(outputFolder, folderName)
 
-    if options == None:
+    if options is None:
         options = {
             "od": 8,
             "hp": 8,

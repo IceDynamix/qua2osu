@@ -25,36 +25,36 @@ class IceMainWindow(QMainWindow, Ui_MainWindow):
 
         self.updateStatus("Finished setup")
 
-    def openInputDirectoryDialog(self):
+    def openInputDirectoryDialog(self) -> None:
         path = str(QFileDialog.getExistingDirectory(
             self, "Select Input Folder"))
         self.inputLineEdit.setText(path)
         self.updateStatus("Set input path to " + path)
 
-    def openOutputDirectoryDialog(self):
+    def openOutputDirectoryDialog(self) -> None:
         path = str(QFileDialog.getExistingDirectory(
             self, "Select Output Folder"))
         self.outputLineEdit.setText(path)
         self.updateStatus("Set output path to " + path)
 
-    def updateConvertButtonIfValidPath(self):
+    def updateConvertButtonIfValidPath(self) -> None:
         # TODO
         pass
 
-    def updateStatus(self, status):
+    def updateStatus(self, status: str) -> None:
         currentText = self.statusLabel.text()
         lastLine = currentText.split("\n")[-1]
         self.statusLabel.setText(lastLine + "\n" + status)
 
-    def updateProgressBarMax(self, maximum):
+    def updateProgressBarMax(self, maximum: int) -> None:
         self.progressBar.setMaximum(maximum * self.progressbarSmoothness)
 
-    def incrementProgressBarValue(self):
+    def incrementProgressBarValue(self) -> None:
         for i in range(self.progressbarSmoothness):
             self.progressBar.setValue(self.progressBar.value() + 1)
             time.sleep(0.04 * 1/self.progressbarSmoothness)
 
-    def initiateConverterThread(self, inputPath, outputPath, options):
+    def initiateConverterThread(self, inputPath: str, outputPath: str, options: object) -> None:
         converterThread = ConverterThread(inputPath, outputPath, options)
         converterThread.updateStatus.connect(self.updateStatus)
         converterThread.updateProgressbarMax.connect(
@@ -64,7 +64,7 @@ class IceMainWindow(QMainWindow, Ui_MainWindow):
 
         return converterThread
 
-    def convertOnClick(self):
+    def convertOnClick(self) -> None:
         inputPath = self.inputLineEdit.text()
         outputPath = self.outputLineEdit.text()
 
@@ -145,7 +145,8 @@ class ConverterThread(QThread):
             count = 1
             for file in qpFilesInInputDir:
                 filePath = os.path.join(self.inputPath, file)
-                self.updateStatus.emit(f"({count}/{numberOfQpFiles}) Converting {filePath}")
+                self.updateStatus.emit(
+                    f"({count}/{numberOfQpFiles}) Converting {filePath}")
                 convertMapset(filePath, self.outputPath, self.options)
                 count += 1
                 self.incrementProgressbarValue.emit()
