@@ -162,7 +162,7 @@
             <string>Normal</string>
            </property>
            <property name="checked">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
           </widget>
          </item>
@@ -170,6 +170,9 @@
           <widget class="QRadioButton" name="sampleSetSoftRadioButton">
            <property name="text">
             <string>Soft</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -199,7 +202,7 @@
             <locale language="English" country="UnitedStates"/>
            </property>
            <property name="placeholderText">
-            <string>./output</string>
+            <string>qua2osu\output</string>
            </property>
           </widget>
          </item>
@@ -258,7 +261,7 @@
             <locale language="English" country="UnitedStates"/>
            </property>
            <property name="placeholderText">
-            <string>./input</string>
+            <string>qua2osu\input</string>
            </property>
           </widget>
          </item>
@@ -288,12 +291,21 @@
       <property name="text">
        <string>Convert</string>
       </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
      </widget>
     </item>
     <item row="2" column="0" colspan="3">
-     <widget class="QLabel" name="logLabel">
+     <widget class="QLabel" name="statusLabel">
       <property name="text">
-       <string>Log</string>
+       <string/>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
