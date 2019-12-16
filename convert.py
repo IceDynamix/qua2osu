@@ -85,12 +85,14 @@ def convertMetadata(qua):
     lines = ["[Metadata]"]
 
     for element in qua:
-        if element in ["AudioFile", "Artist", "Title", "Source", "Tags", "Creator"]:
+        if element in ["AudioFile", "Artist", "Title", "Source", "Creator"]:
             lines.append(f"{element}:{qua[element]}")
             if element in ["Artist", "Title"]:
                 lines.append(f"{element}Unicode:{qua[element]}")
         elif element in metadataRenames:
             lines.append(f"{metadataRenames[element]}:{qua[element]}")
+        elif element == "Tags":
+            lines.append(f"Tags:Quaver {qua["Tags"]}")
 
     for attribute in metadataDefaultValues:
         lines.append(f"{attribute}:{metadataDefaultValues[attribute]}")
