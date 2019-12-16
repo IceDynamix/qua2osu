@@ -215,8 +215,8 @@ def convertQua2Osu(fileContent, options):
 
 
 def convertMapset(path, outputFolder, options):
-    # prefixing with q to prevent osu from showing the wrong preview backgrounds
-    folderName = "q" + os.path.basename(path).split(".")[0]
+    # prefixing with q_ to prevent osu from showing the wrong preview backgrounds
+    folderName = "q_" + os.path.basename(path).split(".")[0]
     outputPath = os.path.join(outputFolder, folderName)
 
     with zipfile.ZipFile(path, "r") as oldDir:
