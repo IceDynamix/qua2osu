@@ -1,3 +1,4 @@
+# 
 import math
 import os
 import re
@@ -7,22 +8,6 @@ import zipfile
 import yaml
 
 regexIllegalCharacters = re.compile(r"[<>:\"/\\|\?\*]")
-
-
-def loadQua(fileContent: str) -> object:
-    """Parses the .qua (.yaml) file into an object using PyYaml"""
-
-    qua = yaml.safe_load(fileContent)
-    return qua
-
-
-def cleanPath(path: str) -> str:
-    """Cleans the path by removing illegal characters and replacing spaces with underscores"""
-
-    # ! Currently unused
-    path = regexIllegalCharacters.sub("", path)
-    path = path.replace(" ", "_")
-    return path
 
 
 # For attributes that exist in both games but are named differently
@@ -77,6 +62,22 @@ DEFAULT_VALUES = {
         "SliderTickRate": 1
     }
 }
+
+
+def loadQua(fileContent: str) -> object:
+    """Parses the .qua (.yaml) file into an object using PyYaml"""
+
+    qua = yaml.safe_load(fileContent)
+    return qua
+
+
+def cleanPath(path: str) -> str:
+    """Cleans the path by removing illegal characters and replacing spaces with underscores"""
+
+    # ! Currently unused
+    path = regexIllegalCharacters.sub("", path)
+    path = path.replace(" ", "_")
+    return path
 
 
 def convertGeneral(qua: object, options: object) -> str:
