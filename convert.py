@@ -1,106 +1,159 @@
-import math
-import os
-import re
-import time
-import zipfile
+# === Imports ===
+import math  # for calculations
+import os  # for paths and directories
+import re  # for regular expressions
+import time  # to measure execution time
+import zipfile  # to handle .zip files (.qua and .osz)
 
-import yaml
-
-regexIllegalCharacters = re.compile(r"[<>:\"/\\|\?\*]")
+import yaml  # to parse .yaml files (.qua)
 
 
-def loadQua(fileContent):
+# === Constants ===
+
+REGEX_ILLEGAL_CHARACTERS = re.compile(r"[<>:\"/\\|\?\*]")
+
+# For attributes that exist in both games but are named differently
+# QuaverAttribute: osuAttribute
+
+RENAMES = {
+
+    "general": {
+        "AudioFile": "AudioFilename",
+        "SongPreviewTime": "PreviewTime"
+    },
+
+    "metadata": {
+        "DifficultyName": "Version",
+        "SongPreviewTime": "PreviewTime"
+    },
+
+}
+
+# For attributes that should be left the way they are
+# QuaverAttribute: osuAttribute
+
+DEFAULT_VALUES = {
+
+    "general": {
+        "AudioLeadIn": 0,
+        "Countdown": 0,
+        "StackLeniency": 0.7,
+        "Mode": 3,
+        "LetterboxInBreaks": 0,
+        "SpecialStyle": 0,
+        "WidescreenStoryboard": 0
+    },
+
+    "editor": {
+        # If bookmarks were to be set to None,
+        # it would print out "None" when casted to a string
+        "Bookmarks": "",
+        "DistanceSpacing": 1.5,
+        "BeatDivisor": 4,
+        "GridSize": 4,
+        "TimelineZoom": 2.5
+    },
+
+    "metadata": {
+        "BeatmapID": 0,
+        "BeatmapSetID": -1
+    },
+
+    "difficulty": {
+        "ApproachRate": 5,
+        "SliderMultiplier": 1.4,
+        "SliderTickRate": 1
+    }
+}
+
+
+# === Functions ===
+
+
+def loadQua(fileContent: str) -> object:
+    """Parses the .qua (.yaml) file into an object using PyYaml"""
+
     qua = yaml.safe_load(fileContent)
     return qua
 
 
-def cleanPath(path):
-    path = regexIllegalCharacters.sub("", path)
+# Currently unused
+def cleanPath(path: str) -> str:
+    """Cleans the path by removing illegal characters and replacing spaces with underscores"""
+
+    path = REGEX_ILLEGAL_CHARACTERS.sub("", path)
     path = path.replace(" ", "_")
     return path
 
 
-generalRenames = {
-    "AudioFile": "AudioFilename",
-    "SongPreviewTime": "PreviewTime"
-}
+def convertGeneral(qua: object, options: object) -> str:
+    """Generates the [General] section of the .osu
 
-generalDefaultValues = {
-    "AudioLeadIn": 0,
-    "Countdown": 0,
-    "StackLeniency": 0.7,
-    "Mode": 3,
-    "LetterboxInBreaks": 0,
-    "SpecialStyle": 0,
-    "WidescreenStoryboard": 0
-}
+    Currently generates following attributes:
+        AudioFilename, AudioLeadIn,
+        PreviewTime, SampleSet,
+        StackLeniency, Mode,
+        LetterboxInBreaks, SpecialStyle,
+        WidescreenStoryboard
+    """
 
-
-def convertGeneral(qua, options):
-    # AudioFilename, AudioLeadIn,
-    # AudioHash, PreviewTime,
-    # Countdown, SampleSet,
-    # StackLeniency, Mode,
-    # LetterboxInBreaks, StoryFireInFront,
-    # UseSkinSprites, AlwaysShowPlayfield,
-    # OverlayPosition, SkinPreference,
-    # EpilepsyWarning, CountdownOffset,
-    # SpecialStyle, WidescreenStoryboard,
-    # SamplesMatchPlaybackRate
     lines = ["[General]"]
+    generalRenames = RENAMES["general"]
+    generalDefaultValues = DEFAULT_VALUES["general"]
 
     sampleSet = options["sampleSet"]
     lines.append(f"SampleSet: {sampleSet}")
-    for element in generalRenames:
+
+    for element in RENAMES["general"]:
         lines.append(f"{generalRenames[element]}: {qua[element]}")
+
     for attribute in generalDefaultValues:
         lines.append(f"{attribute}: {generalDefaultValues[attribute]}")
 
     return "\n".join(lines)
 
 
-editorDefaultValues = {
-    # if i set this to None then it will print
-    # "None" in the .osu, which is why i set this to ""
-    "Bookmarks": "",
-    "DistanceSpacing": 1.5,
-    "BeatDivisor": 4,
-    "GridSize": 4,
-    "TimelineZoom": 2.5
-}
+def convertEditor() -> str:
+    """Generates the [Editor] section of the .osu
 
+    Currently generates following attributes:
+        Bookmarks, DistanceSpacing,
+        BeatDivisor, GridSize, TimelineZoom
+    """
 
-def convertEditor(qua):
-    # Bookmarks, DistanceSpacing,
-    # BeatDivisor, GridSize, TimelineZoom
     lines = ["[Editor]"]
+    editorDefaultValues = DEFAULT_VALUES["editor"]
+
     for attribute in editorDefaultValues:
         lines.append(f"{attribute}: {editorDefaultValues[attribute]}")
+
     return "\n".join(lines)
 
 
-# qua attribute name -> osu attribute name
-metadataRenames = {
-    "DifficultyName": "Version",
-    "SongPreviewTime": "PreviewTime"
-}
+def convertMetadata(qua: object) -> str:
+    """Generates the [Metadata] section of the .osu
 
-metadataDefaultValues = {
-    "BeatmapID": 0,
-    "BeatmapSetID": -1
-}
+    Currently generates following attributes:
+        AudioFile, Artist, ArtistUnicode, Title,
+        TitleUnicode, Source, Creator, Tags,
+        BeatmapID, BeatmapSetID
+    """
 
-
-def convertMetadata(qua):
     lines = ["[Metadata]"]
+    metadataRenames = RENAMES["metadata"]
+    metadataDefaultValues = DEFAULT_VALUES["metadata"]
 
     for element in qua:
+
         if element in ["AudioFile", "Artist", "Title", "Source", "Creator"]:
             lines.append(f"{element}:{qua[element]}")
+
             if element in ["Artist", "Title"]:
                 lines.append(f"{element}Unicode:{qua[element]}")
+
         elif element in metadataRenames:
             lines.append(f"{metadataRenames[element]}:{qua[element]}")
+
         elif element == "Tags":
             tags = qua["Tags"]
             lines.append(f"Tags:Quaver {tags}")
@@ -111,18 +164,17 @@ def convertMetadata(qua):
     return "\n".join(lines)
 
 
-difficultyDefaultValues = {
-    "ApproachRate": 5,
-    "SliderMultiplier": 1.4,
-    "SliderTickRate": 1
-}
+def convertDifficulty(qua: object, options: object) -> str:
+    """Generates the [Difficulty] section of the .osu
 
+    Currently generates following attributes:
+        HPDrainRate, CircleSize,
+        OverallDifficulty, ApproachRate,
+        SliderMultiplier, SliderTickrate
+    """
 
-def convertDifficulty(qua, options):
-    # HPDrainRate, CircleSize,
-    # OverallDifficulty, ApproachRate,
-    # SliderMultiplier, SliderTickrate
     lines = ["[Difficulty]"]
+    difficultyDefaultValues = DEFAULT_VALUES["difficulty"]
 
     keyCount = qua["Mode"][-1:]
     od = options["od"]
@@ -137,37 +189,85 @@ def convertDifficulty(qua, options):
     return "\n".join(lines)
 
 
-def convertEvents(qua):
+def convertEvents(qua: object) -> str:
+    """Generates the [Events] section of the .osu (only background)"""
+
     # Background syntax: 0,0,filename,0,0
     lines = ["[Events]"]
     lines.append(f'0,0,"{qua["BackgroundFile"]}",0,0')
     return "\n".join(lines)
 
 
-def convertTimingPoints(qua, options):
-    # time, beatLength, meter, sampleSet,
-    # sampleIndex, volume, uninherited, effects
+def convertTimingPoints(qua: object, options: object) -> str:
+    """Generates the [TimingPoints] section of the .osu
+
+    Structure of a timing point:
+        [time,beatLength,meter,sampleSet,sampleIndex,volume,uninherited,effects]
+
+        time (int)
+            Start time of the timing section, in milliseconds from the
+            beginning of the beatmap's audio. The end of the timing section
+            is the next timing point's time (or never, if this is the
+            last timing point).
+
+        beatLength : float
+            - For uninherited timing points, the duration of a beat, in
+                milliseconds.
+            - For inherited timing points, a negative inverse slider
+                velocity multiplier, as a percentage. For example, -50 would
+                make all sliders in this timing section twice
+                as fast as SliderMultiplier.
+
+        meter (int)
+            Amount of beats in a measure. Inherited timing points ignore
+            this property.
+
+        sampleSet (int)
+            Default sample set for hit objects (0 = beatmap default,
+            1 = normal, 2 = soft, 3 = drum).
+
+        sampleIndex (int)
+            Custom sample index for hit objects. 0 indicates osu!'s default
+            hit sounds.
+
+        volume (int)
+            Volume percentage for hit objects.
+
+        uninherited (0 or 1)
+            Whether or not the timing point is uninherited.
+
+        effects (int:int:...)
+            Bit flags that give the timing point extra effects.
+    """
+
     lines = ["[TimingPoints]"]
     hitSoundVolume = options["hitSoundVolume"]
 
     for timingPoint in qua["TimingPoints"]:
-        # if any value is 0 then quaver doesnt print it in the qua
+        # If any value is 0 then Quaver doesn't print it in the qua
         startTime = timingPoint.get("StartTime", 0)
         bpm = timingPoint.get("Bpm", 0)
+
         if bpm <= 0:  # 0.0x bpm or negative bpm
-            msPerBeat = -10e10  # substituting with very low bpm value
+            # substituting with very low bpm value (0.000006 BPM)
+            msPerBeat = -10e10
         else:
-            msPerBeat = 60000/bpm
-        lines.append(
-            f"{startTime},{msPerBeat},4,0,0,{hitSoundVolume},1,0")
+            msPerBeat = 60000 / bpm
+
+        lines.append(f"{startTime},{msPerBeat},4,0,0,{hitSoundVolume},1,0")
 
     for sv in qua["SliderVelocities"]:
         startTime = sv.get("StartTime", 0)
         multiplier = sv.get("Multiplier", 0)
+
         if multiplier <= 0:  # 0.0x sv or negative sv
-            svValue = -10e10  # substituting with very low sv value
+            # substituting with very low sv value (0.00000001‬x)
+            # osu! clamps values between 0.01x - 10x so this wouldn't
+            # have been necessary actually
+            svValue = -10e10
         else:
-            svValue = -100/multiplier
+            svValue = -100 / multiplier
+
         lines.append(f"{startTime},{svValue},0,0,0,{hitSoundVolume},0")
 
     # osu doesnt care if the section is sorted
@@ -184,47 +284,109 @@ hitSoundsDict = {
 }
 
 
-def convertHitObjects(qua):
+def convertHitObjects(qua: object) -> str:
+    """Generates the [TimingPoints] section of the .osu
+
+    - Types:
+        1 << 0 : Hit circle (normal note in osu!mania)
+        1 << 1 : Slider (unused in osu!mania)
+        1 << 3 : Spinner (unused in osu!mania)
+        1 << 7 : osu!mania hold (commonly referred to as long note or LN)
+
+    - Structure of a normal hit object:
+        - [x,y,time,type,hitSound,objectParams,hitSample]
+
+        - x (int)
+            Determines the index of the column that the note will be in.
+            It is computed by floor(x * columnCount / 512) and
+            clamped between 0 and columnCount - 1.
+
+        - y (int)
+            Unused in osu!mania, defaults to 192
+
+        - time (int)
+            Time when the object is to be hit, in milliseconds from
+            the beginning of the beatmap's audio.
+
+        - type (int)
+            Bit flags indicating the type of the object.
+
+       - hitSound (int,int,...)
+            Extra parameters specific to the object's type.
+
+        - objectParams
+            Extra parameters specific to the object's type.
+
+        - hitSample (int)
+            bitwise flag
+
+    - Structure of a LN:
+        - [x,y,time,type,hitSound,endTime:hitSample]
+
+        - endTime (int)
+            End time of the hold, in milliseconds from the
+            beginning of the beatmap's audio.
+    """
+    # TODO finish docs
+
     lines = ["[HitObjects]"]
-    columns = int(qua["Mode"][-1:])  # 4 for 4k, 7 for 7k
+
+    # Mode is provided either as "Keys4" or "Keys7" so this
+    # extracts the number
+    numberOfCcolumns = int(qua["Mode"][-1:])
 
     for hitObject in qua["HitObjects"]:
 
-        # x, y, time, type, hitSound, objectParams, hitSample
         startTime = hitObject.get("StartTime", 0)
         lane = hitObject.get("Lane", 0)
-        x = math.floor((lane / columns) * 512) - 64
-        y = 192
+
+        # osu uses the x coordinate to determine the
+        # position, the max width of the osu playfield is 512
+        xPos = math.floor((lane / numberOfCcolumns) * 512) - 64
+        yPos = 192
+
         hsBits = 0
 
         if "HitSound" in hitObject and not isinstance(hitObject["HitSound"], int):
             hitSounds = hitObject["HitSound"].split(", ")
-            for hs in hitSounds:
-                hsBits += hitSoundsDict[hs]
+
+            for hitSound in hitSounds:
+                hsBits += hitSoundsDict[hitSound]
 
         if "EndTime" not in hitObject:  # normal note
-            line = f"{x},{y},{startTime},1,{hsBits},0:0:0:0:"
+            line = f"{xPos},{yPos},{startTime},1,{hsBits},0:0:0:0:"
+
         else:  # long note
-            # x,y,time,type,hitSound,endTime,hitSample
             endTime = hitObject["EndTime"]
-            line = f"{x},{y},{startTime},128,{hsBits},{endTime}:0:0:0:0:"
+            line = f"{xPos},{yPos},{startTime},128,{hsBits},{endTime}:0:0:0:0:"
 
         lines.append(line)
 
     return "\n".join(lines)
 
 
-def convertQua2Osu(fileContent, options):
-    if options == None:
-        options = {
+def convertQua2Osu(fileContent: str, options: object) -> str:
+    """Converts a .qua beatmap file to a .osu beatmap file
 
-        }
+    All parts are split into different sections, defined by the .osu structure
+    | Section      | Content                                |
+    |--------------|----------------------------------------|
+    | General      | Contains general settings              |
+    | Editor       | Contains editor related settings       |
+    | Metadata     | Contains the metadata of the beatmap   |
+    | Difficulty   | Contains difficulty related settings   |
+    | Events       | Contains the background file name      |
+    | TimingPoints | Contains the timing                    |
+    | HitObjects   | Contains the hit objects (notes)       |
+    """
+
     qua = loadQua(fileContent)
+
     osu = "\n\n".join([
         "// This map was converted using qua2osu",
         "osu file format v14",
         convertGeneral(qua, options),
-        convertEditor(qua),
+        convertEditor(),
         convertMetadata(qua),
         convertDifficulty(qua, options),
         convertEvents(qua),
@@ -235,13 +397,27 @@ def convertQua2Osu(fileContent, options):
     return osu
 
 
-def convertMapset(path, outputFolder, options=None):
-    # prefixing with q_ to prevent osu
-    # from showing the wrong preview backgrounds
+def convertMapset(path: str, outputFolder: str, options=None) -> None:
+    """Converts a whole .qp mapset to a .osz mapset
+
+    Moves all files to a new directory and converts all .qua files to .osu files
+
+    Options are built up as following:
+        options = {
+            "od": int,
+            "hp": int,
+            "hitSoundVolume": int,
+            "sampleSet": ["Soft","Normal","Drum"]
+        }
+    """
+
+    # Prefixing with q_ to prevent osu from showing the wrong preview
+    # backgrounds because it takes the folder number to
+    # choose the background for whatever reason
     folderName = "q_" + os.path.basename(path).split(".")[0]
     outputPath = os.path.join(outputFolder, folderName)
 
-    if options == None:
+    if options is None:
         options = {
             "od": 8,
             "hp": 8,
@@ -254,12 +430,16 @@ def convertMapset(path, outputFolder, options=None):
 
     for file in os.listdir(outputPath):
         filePath = os.path.join(outputPath, file)
+
         if file.endswith(".qua"):
+
             with open(filePath, "r") as openedFile:
                 fileContent = openedFile.read()
                 osu = convertQua2Osu(fileContent, options)
+
                 with open(filePath.replace(".qua", ".osu"), "w+") as newFile:
                     newFile.write(osu)
+
             os.remove(filePath)
 
     with zipfile.ZipFile(outputPath + ".osz", "w") as newDir:
@@ -267,16 +447,17 @@ def convertMapset(path, outputFolder, options=None):
             for file in files:
                 newDir.write(os.path.join(root, file), file)
 
-    return
 
+def main():
+    """Runs a basic conversion of the samples folder for testing"""
 
-if __name__ == '__main__':
     inputPath = "samples"
     outputPath = "output"
     qpFilesInInputDir = []
 
     for file in os.listdir(inputPath):
-        if file.endswith('.qp') and os.path.isfile(os.path.join(inputPath, file)):
+        path = os.path.join(inputPath, file)
+        if (file.endswith('.qp') and os.path.isfile(path)):
             qpFilesInInputDir.append(file)
 
     numberOfQpFiles = len(qpFilesInInputDir)
@@ -292,6 +473,10 @@ if __name__ == '__main__':
             convertMapset(filePath, outputPath, None)
 
         end = time.time()
-        timeElapsed = round(end-start, 2)
+        timeElapsed = round(end - start, 2)
         print(
             f"Finished converting all mapsets, total time elapsed: {timeElapsed} seconds")
+
+
+if __name__ == '__main__':
+    main()
