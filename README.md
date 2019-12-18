@@ -28,6 +28,11 @@ download the lastest release from [here](https://github.com/IceDynamix/qua2osu/r
 * run main.py either by double clicking or running `py main.py`
 * enjoy
 
+## documentation
+using [pycco](https://github.com/pycco-docs/pycco) to create documentation for this project
+* [Documentation of convert.py](https://icedynamix.github.io/qua2osu/convert.html)
+* [Documentation of qua2osu.py](https://icedynamix.github.io/qua2osu/qua2osu.html)
+
 ## notes
 
 if you don't select any paths then it will choose `.\samples` as the default input path and `.\output` as the default output path  
