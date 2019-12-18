@@ -26,7 +26,7 @@ Download the lastest release from [here](https://github.com/IceDynamix/qua2osu/r
 * *It's best to set up a [virtual environment](https://docs.python.org/3/tutorial/venv.html) for the project, but not necessary if you don't know how to*
   * Activate your virtual environment by running the activate file in your virtual environment folder
 * Run `pip install -r requirements.txt` in the directory to install all package dependencies (mainly PyYaml (.qua parser), PyQT5 (gui) and some QOL stuff)
-* Run `py main.py` or `python3 main.py`
+* Run `py qua2osu.py` or `python3 qua2osu.py`
 * Enjoy
 
 ## Documentation
