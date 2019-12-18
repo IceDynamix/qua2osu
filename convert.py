@@ -355,7 +355,7 @@ def convertTimingPoints(qua: object, options: object) -> str:
 
 
 def convertHitObjects(qua: object) -> str:
-    """Generates the [TimingPoints] section of the .osu
+    """Generates the [HitObjects] section of the .osu
 
     - Types:
         - 1 << 0 : Hit circle (normal note in osu!mania)
