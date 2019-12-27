@@ -495,7 +495,7 @@ def convertMapset(path: str, outputFolder: str, options=None) -> None:
     # Prefixing with "q_" to prevent osu from showing the wrong preview
     # backgrounds, because it takes the folder number to
     # choose the background for whatever reason
-    folderName = "q_" + os.path.basename(path).split(".")[0]
+    folderName = "q_" + os.path.basename(path).replace(".qp", "")
     outputPath = os.path.join(outputFolder, folderName)
 
     # Default options in case options aren't given (in this file's `main()`
