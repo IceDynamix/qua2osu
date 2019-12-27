@@ -341,7 +341,7 @@ def convertTimingPoints(qua: object, options: object) -> str:
         else:
             svValue = -100 / multiplier
 
-        lines.append(f"{startTime},{svValue},0,0,0,{hitSoundVolume},0")
+        lines.append(f"{startTime},{svValue},0,0,0,{hitSoundVolume},0,0")
 
     # I'm running through all uninherited points, then all inherited points,
     # which means that the lines aren't chronologically sorted.
