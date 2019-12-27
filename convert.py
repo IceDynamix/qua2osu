@@ -472,7 +472,9 @@ def convertQua2Osu(fileContent: str, options: object) -> str:
         convertHitObjects(qua)
     ])
 
-    return osu
+    # Extra empty line at the bottom to help some tools
+    # who expect one (like the R programming language)
+    return osu + "\n"
 
 
 def convertMapset(path: str, outputFolder: str, options=None) -> None:
