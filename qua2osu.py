@@ -20,8 +20,6 @@ class IceMainWindow(QMainWindow, Ui_MainWindow):
     All of the objects themselves are managed by QT designer in the gui.ui (gui.py) file
     """
 
-    progressbarSmoothness = 10
-
     def __init__(self):
         QMainWindow.__init__(self)
         self.setupUi(self)
@@ -57,14 +55,12 @@ class IceMainWindow(QMainWindow, Ui_MainWindow):
     def updateProgressBarMax(self, maximum):
         """Wrapper for updating the progress bar maximum"""
 
-        self.progressBar.setMaximum(maximum * self.progressbarSmoothness)
+        self.progressBar.setMaximum(maximum)
 
     def incrementProgressBarValue(self):
         """Increments the progress bar by one unit total, adds a smooth animation"""
 
-        for i in range(self.progressbarSmoothness):
-            self.progressBar.setValue(self.progressBar.value() + 1)
-            time.sleep(0.04 * 1 / self.progressbarSmoothness)
+        self.progressBar.setValue(self.progressBar.value() + 1)
 
     def initiateConverterThread(self, inputPath, outputPath, options):
         """Sets up the converter thread"""
@@ -117,6 +113,8 @@ class IceMainWindow(QMainWindow, Ui_MainWindow):
             "hitSoundVolume": selectedHitSoundVolume,
             "sampleSet": selectedSampleSet
         }
+
+        self.progressBar.setValue(0)
 
         self.converterThread = self.initiateConverterThread(
             inputPath, outputPath, options)
