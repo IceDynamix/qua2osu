@@ -81,10 +81,10 @@ class IceMainWindow(QMainWindow, Ui_MainWindow):
         outputPath = self.outputLineEdit.text()
 
         if inputPath == "" or outputPath == "":
-            self.updateStatus("Empty paths detected, using default "
-                              "samples input and default output path")
+            self.updateStatus("Empty paths detected, using defaults")
+
             if inputPath == "":
-                inputPath = "samples"
+                inputPath = "input"
 
             if outputPath == "":
                 outputPath = "output"

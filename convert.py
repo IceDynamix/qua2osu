@@ -1,12 +1,13 @@
 # ## Imports
+import argparse  # parsing command line arguments
 import math  # for calculations
 import os  # for paths and directories
 import re  # for regular expressions
+import sys
 import time  # to measure execution time
 import zipfile  # to handle .zip files (.qua and .osz)
 
 import yaml  # to parse .yaml files (.qua)
-
 
 # ## Constants
 
@@ -477,7 +478,7 @@ def convertQua2Osu(fileContent: str, options: object) -> str:
     return osu + "\n"
 
 
-def convertMapset(path: str, outputFolder: str, options=None) -> None:
+def convertMapset(path: str, outputFolder: str, options) -> None:
     """Converts a whole .qp mapset to a .osz mapset
 
     Moves all files to a new directory and converts all .qua files to .osu files
@@ -499,16 +500,6 @@ def convertMapset(path: str, outputFolder: str, options=None) -> None:
     # choose the background for whatever reason
     folderName = "q_" + os.path.basename(path).replace(".qp", "")
     outputPath = os.path.join(outputFolder, folderName)
-
-    # Default options in case options aren't given (in this file's `main()`
-    # for example)
-    if options is None:
-        options = {
-            "od": 8,
-            "hp": 8,
-            "hitSoundVolume": 20,
-            "sampleSet": "Soft"
-        }
 
     # Opens the .qp (.zip) mapset file and extracts it into a folder in the same directory
     with zipfile.ZipFile(path, "r") as oldDir:
@@ -537,46 +528,105 @@ def convertMapset(path: str, outputFolder: str, options=None) -> None:
                 newDir.write(os.path.join(root, file), file)
 
 
+def initArgParser() -> argparse.ArgumentParser:
+
+    argParser = argparse.ArgumentParser()
+
+    argParser.add_argument("-i", "--input",
+                           required=False,
+                           help="path of the input folder, defaults to ./input")
+
+    argParser.add_argument("-o", "--output",
+                           required=False,
+                           help="path of the output folder, defaults to ./output")
+
+    argParser.add_argument("-od", "--overall-difficulty",
+                           required=False,
+                           help="overall difficulty as an integer between 0 and 10, defaults to 8")
+
+    argParser.add_argument("-hp", "--hp-drain",
+                           required=False,
+                           help="HP drain as an integer between 0 and 10, defaults to 8")
+
+    argParser.add_argument("-hs", "--sampleset",
+                           required=False,
+                           help="hitsound sample set as either 'Soft', 'Normal' or 'Drum', defaults to Soft")
+
+    argParser.add_argument("-hv", "--hitsound-volume",
+                           required=False,
+                           help="hitsound volume as an integer between 0 and 100, defaults to 20")
+
+    return argParser
+
+
 # ### Main
 
 
 def main():
-    """Runs a basic conversion of the samples folder for testing"""
+    """Runs the map file conversions"""
 
-    inputPath = "samples"
-    outputPath = "output"
+    argParser = initArgParser()
+    args = vars(argParser.parse_args())
+
+    defaultParameters = {
+        "input": "input",
+        "output": "output",
+        "overall_difficulty": 8,
+        "hp_drain": 8,
+        "hitsound_volume": 20,
+        "sampleset": "Soft"
+    }
+
+    # Set default parameters if not given
+    for arg in args:
+        if args[arg] is None:
+            args[arg] = defaultParameters[arg]
 
     qpFilesInInputDir = []
 
-    # Filters for all files that end with .qp and puts the
-    # complete path of the files into an array
-    for file in os.listdir(inputPath):
-        path = os.path.join(inputPath, file)
+    try:
+        # Filters for all files that end with .qp and puts the
+        # complete path of the files into an array
+        for file in os.listdir(args["input"]):
+            path = os.path.join(args["input"], file)
+            if (file.endswith('.qp') and os.path.isfile(path)):
+                qpFilesInInputDir.append(file)
 
-        if (file.endswith('.qp') and os.path.isfile(path)):
-            qpFilesInInputDir.append(file)
+    except OSError:
+        print("Input path is invalid")
+        sys.exit(1)
+
+    if not os.path.exists(args["output"]):
+        os.mkdir(args["output"])
 
     numberOfQpFiles = len(qpFilesInInputDir)
 
     if numberOfQpFiles == 0:
-        print("No mapsets found in " + inputPath)
+        print("No mapsets found in " + args["input"])
+        sys.exit(1)
 
-    else:
-        # Starts the timer for the total execution time
-        start = time.time()
+    options = {
+        "od": int(args["overall_difficulty"]),
+        "hp": int(args["hp_drain"]),
+        "hitSoundVolume": int(args["hitsound_volume"]),
+        "sampleSet": args["sampleset"]
+    }
 
-        # Run the conversion for each .qp file
-        for file in qpFilesInInputDir:
-            filePath = os.path.join(inputPath, file)
-            print(f"Converting {filePath}")
-            convertMapset(filePath, outputPath, None)
+    # Starts the timer for the total execution time
+    start = time.time()
 
-        # Stops the timer for the total execution time
-        end = time.time()
-        timeElapsed = round(end - start, 2)
+    # Run the conversion for each .qp file
+    for file in qpFilesInInputDir:
+        filePath = os.path.join(args["input"], file)
+        print(f"Converting {filePath}")
+        convertMapset(filePath, args["output"], options)
 
-        print("Finished converting all mapsets, "
-              f"total time elapsed: {timeElapsed} seconds")
+    # Stops the timer for the total execution time
+    end = time.time()
+    timeElapsed = round(end - start, 2)
+
+    print("Finished converting all mapsets, "
+          f"total time elapsed: {timeElapsed} seconds")
 
 
 if __name__ == '__main__':
