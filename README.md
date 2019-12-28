@@ -12,11 +12,15 @@ Download the lastest release from [here](https://github.com/IceDynamix/qua2osu/r
 
 ## Step by step instructions
 
-* Download qua2osu, no python needed etc.
-* GUI (Graphical User Interface) should pop up, select a folder with your .qp files and select a folder to output your .osz files
-* Choose available options (currently od, hp, hs volume, hs sample set)
-* Click convert
-* Done
+* Download qua2osu, no installation needed etc.
+* You can decide to use the command-line tool or the GUI (Graphical User Interface)
+* Command-line:
+  * Execute the qua2osu.exe file with the --help flag in the console by running `qua2osu.exe --help` (double-clicking doesn't work)
+  * Set options with some flags to spice things up (Example: `qua2osu.exe -i myfolder/subfolder -od 8.5 -hp 9 -hv 0` which would set the input folder to "myfolder/subfolder", OD to 8.5, HP to 9 and hitsound volume to 0)
+* GUI:
+  * Execute the qua2osu-gui.exe file, either by double-clicking or by running it in the console
+  * GUI should pop up, select a folder with your .qp files and select a folder to output your .osz files
+  * Set some settings and click on convert
 
 ## Step by step instructions to build the project yourself
 
@@ -24,18 +28,21 @@ Download the lastest release from [here](https://github.com/IceDynamix/qua2osu/r
 * Install [pip](https://pip.pypa.io/en/stable/installing/) if necessary (should ship with python)
 * Clone this repo: `git clone https://github.com/IceDynamix/qua2osu.git`
 * *It's best to set up a [virtual environment](https://docs.python.org/3/tutorial/venv.html) for the project, but not necessary if you don't know how to*
-  * Activate your virtual environment by running the activate file in your virtual environment folder
+  * *Activate your virtual environment by running the activate file in your virtual environment folder*
 * Run `pip install -r requirements.txt` in the directory to install all package dependencies (mainly PyYaml (.qua parser), PyQT5 (gui) and some QOL stuff)
-* Run `py qua2osu.py` or `python3 qua2osu.py`
-* Enjoy
+* Run `py qua2osu.py` or `py qua2osu-gui.py`
 
 ## Documentation
 
 This project uses [pycco](https://github.com/pycco-docs/pycco) to create documentation.
 Regenerating the documentation after modifying or adding new files is done by `pycco yourpythonfile.py`.
 
-* [Documentation of convert.py](https://icedynamix.github.io/qua2osu/convert.html)
-* [Documentation of qua2osu.py](https://icedynamix.github.io/qua2osu/qua2osu.html)
+Documentation of:
+
+* [constants.py](https://icedynamix.github.io/qua2osu/constants.html)
+* [conversion.py](https://icedynamix.github.io/qua2osu/conversion.html)
+* [qua2osu.py](https://icedynamix.github.io/qua2osu/qua2osu.html)
+* [qua2osu-gui.py](https://icedynamix.github.io/qua2osu/qua2osu-gui.html)
 
 ## Contributing
 
@@ -50,11 +57,11 @@ In case you want to contribute to this project *(which I highly doubt to be perf
 
 ## Notes
 
-The GUI will choose `.\samples` as the default input path and `.\output` as the default output path, in case you don't select any paths.
+The GUI will choose `./input` as the default input path and `./output` as the default output path, in case you don't select any paths.
 
 Please report issues [here on github](https://github.com/IceDynamix/qua2osu/issues).
 
-## referenced games
+## Referenced games
 
 * [**Quaver**](https://quavergame.com/)
 * [**osu!**](https://osu.ppy.sh/)

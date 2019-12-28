@@ -1,81 +1,11 @@
 # ## Imports
 import math  # for calculations
 import os  # for paths and directories
-import re  # for regular expressions
-import time  # to measure execution time
 import zipfile  # to handle .zip files (.qua and .osz)
 
 import yaml  # to parse .yaml files (.qua)
 
-
-# ## Constants
-
-REGEX_ILLEGAL_CHARACTERS = re.compile(r"[<>:\"/\\|\?\*]")
-
-# For attributes that exist in both games but are named differently.
-
-# Format: QuaverAttribute -> osuAttribute
-
-RENAMES = {
-
-    "general": {
-        "AudioFile": "AudioFilename",
-        "SongPreviewTime": "PreviewTime"
-    },
-
-    "metadata": {
-        "DifficultyName": "Version",
-        "SongPreviewTime": "PreviewTime"
-    },
-
-}
-
-# For attributes that should be left the way they are.
-
-# Format: QuaverAttribute -> osuAttribute
-
-DEFAULT_VALUES = {
-
-    "general": {
-        "AudioLeadIn": 0,
-        "Countdown": 0,
-        "StackLeniency": 0.7,
-        "Mode": 3,
-        "LetterboxInBreaks": 0,
-        "SpecialStyle": 0,
-        "WidescreenStoryboard": 0
-    },
-
-    "editor": {
-        # If bookmarks were to be set to None,
-        # it would print out "None" when casted to a string
-        "Bookmarks": "",
-        "DistanceSpacing": 1.5,
-        "BeatDivisor": 4,
-        "GridSize": 4,
-        "TimelineZoom": 2.5
-    },
-
-    "metadata": {
-        "BeatmapID": 0,
-        "BeatmapSetID": -1
-    },
-
-    "difficulty": {
-        "ApproachRate": 5,
-        "SliderMultiplier": 1.4,
-        "SliderTickRate": 1
-    }
-}
-
-
-HIT_SOUNDS = {
-    "Normal": 1,
-    "Whistle": 2,
-    "Finish": 4,
-    "Clap": 8
-}
-
+from constants import *
 
 # ## Functions
 
@@ -477,7 +407,7 @@ def convertQua2Osu(fileContent: str, options: object) -> str:
     return osu + "\n"
 
 
-def convertMapset(path: str, outputFolder: str, options=None) -> None:
+def convertMapset(path: str, outputFolder: str, options) -> None:
     """Converts a whole .qp mapset to a .osz mapset
 
     Moves all files to a new directory and converts all .qua files to .osu files
@@ -499,16 +429,6 @@ def convertMapset(path: str, outputFolder: str, options=None) -> None:
     # choose the background for whatever reason
     folderName = "q_" + os.path.basename(path).replace(".qp", "")
     outputPath = os.path.join(outputFolder, folderName)
-
-    # Default options in case options aren't given (in this file's `main()`
-    # for example)
-    if options is None:
-        options = {
-            "od": 8,
-            "hp": 8,
-            "hitSoundVolume": 20,
-            "sampleSet": "Soft"
-        }
 
     # Opens the .qp (.zip) mapset file and extracts it into a folder in the same directory
     with zipfile.ZipFile(path, "r") as oldDir:
@@ -535,49 +455,3 @@ def convertMapset(path: str, outputFolder: str, options=None) -> None:
         for root, dirs, files in os.walk(outputPath):
             for file in files:
                 newDir.write(os.path.join(root, file), file)
-
-
-# ### Main
-
-
-def main():
-    """Runs a basic conversion of the samples folder for testing"""
-
-    inputPath = "samples"
-    outputPath = "output"
-
-    qpFilesInInputDir = []
-
-    # Filters for all files that end with .qp and puts the
-    # complete path of the files into an array
-    for file in os.listdir(inputPath):
-        path = os.path.join(inputPath, file)
-
-        if (file.endswith('.qp') and os.path.isfile(path)):
-            qpFilesInInputDir.append(file)
-
-    numberOfQpFiles = len(qpFilesInInputDir)
-
-    if numberOfQpFiles == 0:
-        print("No mapsets found in " + inputPath)
-
-    else:
-        # Starts the timer for the total execution time
-        start = time.time()
-
-        # Run the conversion for each .qp file
-        for file in qpFilesInInputDir:
-            filePath = os.path.join(inputPath, file)
-            print(f"Converting {filePath}")
-            convertMapset(filePath, outputPath, None)
-
-        # Stops the timer for the total execution time
-        end = time.time()
-        timeElapsed = round(end - start, 2)
-
-        print("Finished converting all mapsets, "
-              f"total time elapsed: {timeElapsed} seconds")
-
-
-if __name__ == '__main__':
-    main()
