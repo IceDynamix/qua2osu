@@ -1,7 +1,9 @@
+"""Command-line tool for map conversion"""
+
 # ## Imports
 import argparse  # parsing command line arguments
 import os  # for paths and directories
-import sys
+import sys  # used only for sys.exit()
 import time  # to measure execution time
 
 from constants import *
@@ -11,37 +13,43 @@ from conversion import convertMapset
 
 
 def initArgParser() -> argparse.ArgumentParser:
+    """Creates an argument parser with all of the arguments already added
+
+    Uses `COMMAND_LINE_ARGS` from constants.py to generate each argument
+    """
 
     argParser = argparse.ArgumentParser()
 
-    argParser.add_argument("-i", "--input",
-                           required=False,
-                           help="path of the input folder, defaults to ./input")
+    for arg in COMMAND_LINE_ARGS:
+        argument = COMMAND_LINE_ARGS[arg]
 
-    argParser.add_argument("-o", "--output",
-                           required=False,
-                           help="path of the output folder, defaults to ./output")
+        if "list" in argument:
+            argParser.add_argument(
+                argument["shortFlag"],  # Example: "-i", "-od"
+                argument["longFlag"],  # Example: "--help", "--sampleset"
+                required=argument["required"],
+                help=argument["description"],
+                default=argument["default"],
+                type=argument["type"],
+                # This is literally the only line that was added
+                # please tell me there's a better way
+                choices=argument["list"]
+            )
 
-    argParser.add_argument("-od", "--overall-difficulty",
-                           required=False,
-                           help="overall difficulty as an integer between 0 and 10, defaults to 8")
-
-    argParser.add_argument("-hp", "--hp-drain",
-                           required=False,
-                           help="HP drain as an integer between 0 and 10, defaults to 8")
-
-    argParser.add_argument("-hs", "--sampleset",
-                           required=False,
-                           help="hitsound sample set as either 'Soft', 'Normal' or 'Drum', defaults to Soft")
-
-    argParser.add_argument("-hv", "--hitsound-volume",
-                           required=False,
-                           help="hitsound volume as an integer between 0 and 100, defaults to 20")
+        else:
+            argParser.add_argument(
+                argument["shortFlag"],
+                argument["longFlag"],
+                required=argument["required"],
+                help=argument["description"],
+                default=argument["default"],
+                type=argument["type"]
+            )
 
     return argParser
 
 
-def validateArgs(args):
+def validateArgs(args) -> dict:
     """Validates all input arguments"""
 
     # Check if script was run without any arguments, enter
@@ -52,52 +60,30 @@ def validateArgs(args):
             hasArguments = True
             break
 
-    # Make the sampleset title case so we can compare to our samplesets constant
-    # without having to worry about capitalization
-    args["sampleset"] = str.title(args["sampleset"])
-
-    # Validate each argument, set to default if bad
-    for arg in args:
-        invalid = False
-        argumentObject = COMMAND_LINE_ARGS[arg]
-        defaultValue = argumentObject["default"]
-
-        if args[arg] is None:
-            args[arg] = defaultValue
-            continue
-
-        else:
-            try:
-                args[arg] = argumentObject["format"](args[arg])
-            except (ValueError, TypeError):
-                invalid = True
-
-        if not invalid:
-            if "min" in argumentObject and \
-                    args[arg] < argumentObject["min"]:
-                invalid = True
-
-            elif "max" in argumentObject and \
-                    args[arg] > argumentObject["max"]:
-                invalid = True
-
-            elif "list" in argumentObject and \
-                    str.title(args[arg]) not in argumentObject["list"]:
-                invalid = True
-
-        if invalid:
-            print(f"Argument {arg} was invalid, using default value {defaultValue}")
-            args[arg] = defaultValue
-
     if not hasArguments:
         args["input"] = input("Please enter your input folder: ")
         args["output"] = input("Please enter your output folder: ")
 
-    # Checks if the given input path exists
-    try:
-        os.path.exists(args["input"])
-    except OSError:
-        print("Input path was invalid")
+    # Validate each argument, set to default if bad
+    # (only used for value in bounds checking at the moment)
+    for arg in args:
+        argumentObject = COMMAND_LINE_ARGS[arg]
+
+        # Out of bounds check (only applies to OD and HP for now)
+        valueTooLow = "min" in argumentObject and args[arg] < argumentObject["min"]
+        valueTooHigh = "max" in argumentObject and args[arg] > argumentObject["max"]
+
+        if valueTooLow:
+            print(f"{arg} must be > {argumentObject['min']}")
+            sys.exit(1)
+
+        elif valueTooHigh:
+            print(f"{arg} must be < {argumentObject['max']}")
+            sys.exit(1)
+
+    # Checks if the given input path exists, exits if not
+    if not os.path.exists(args["input"]):
+        print("Input folder does not exist")
         sys.exit(1)
 
     # Checks if output path exists, creates a new folder if not
@@ -115,7 +101,8 @@ def main():
     """Runs the map file conversions
 
     Run `py qua2osu.py --help` for help with command line arguments or just
-    run `py qua2osu.py` by itself if you want to do without the extra options
+    run `py qua2osu.py` by itself if you want to make do without the extra
+    options
     """
 
     argParser = initArgParser()
@@ -136,6 +123,8 @@ def main():
         print("No mapsets found in " + args["input"])
         sys.exit(1)
 
+    # Assigns the arguments to an options object to pass to
+    # the `convertMapset()` function
     options = {
         "od": args["overall_difficulty"],
         "hp": args["hp_drain"],
@@ -162,3 +151,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+    sys.exit(0)

@@ -1,11 +1,6 @@
-# ## Imports
-import re  # for regular expressions
+"""General constants that are needed in most places"""
 
-# ## Constants
-
-REGEX_ILLEGAL_CHARACTERS = re.compile(r"[<>:\"/\\|\?\*]")
-
-
+# Hitsounds enum
 HIT_SOUNDS = {
     "Normal": 1,
     "Whistle": 2,
@@ -13,7 +8,7 @@ HIT_SOUNDS = {
     "Clap": 8
 }
 
-
+# Samplesets list
 SAMPLESETS = [
     "Soft",
     "Normal",
@@ -21,9 +16,9 @@ SAMPLESETS = [
 ]
 
 
-# For attributes that exist in both games but are named differently.
+# Dictionary for attributes that exist in both games, but are named differently
 
-# Format: QuaverAttribute -> osuAttribute
+# quaverAttribute -> osuAttribute
 
 RENAMES = {
 
@@ -41,7 +36,7 @@ RENAMES = {
 
 # For attributes that should be left the way they are.
 
-# Format: QuaverAttribute -> osuAttribute
+# attribute -> default value
 
 DEFAULT_VALUES = {
 
@@ -49,7 +44,7 @@ DEFAULT_VALUES = {
         "AudioLeadIn": 0,
         "Countdown": 0,
         "StackLeniency": 0.7,
-        "Mode": 3,
+        "Mode": 3,  # mania
         "LetterboxInBreaks": 0,
         "SpecialStyle": 0,
         "WidescreenStoryboard": 0
@@ -66,7 +61,7 @@ DEFAULT_VALUES = {
     },
 
     "metadata": {
-        "BeatmapID": 0,
+        "BeatmapID": 0,  # unsubmitted
         "BeatmapSetID": -1
     },
 
@@ -78,43 +73,71 @@ DEFAULT_VALUES = {
 
 }
 
+# Attributes of the command line arguments
+
+# No documentation is really needed because there's already a description
+# for every argument
 
 COMMAND_LINE_ARGS = {
 
     "input": {
+        "shortFlag": "-i",
+        "longFlag": "--input",
+        "required": False,
+        "description": "Path of the input folder, defaults to ./input",
         "default": "input",
-        "format": [str]
+        "type": str
     },
 
     "output": {
+        "shortFlag": "-o",
+        "longFlag": "--output",
+        "required": False,
+        "description": "Path of the output folder, defaults to ./output",
         "default": "output",
-        "format": str
+        "type": str
     },
 
     "overall_difficulty": {
+        "shortFlag": "-od",
+        "longFlag": "--overall-difficulty",
+        "required": False,
+        "description": "Overall difficulty as an integer between 0 and 10, defaults to 8",
         "default": 8,
-        "format": float,
+        "type": float,
         "min": 0,
         "max": 10
     },
 
     "hp_drain": {
+        "shortFlag": "-hp",
+        "longFlag": "--hp-drain",
+        "required": False,
+        "description": "HP drain as an integer between 0 and 10, defaults to 8",
         "default": 8,
-        "format": float,
+        "type": float,
         "min": 0,
         "max": 10
     },
 
     "hitsound_volume": {
+        "shortFlag": "-hv",
+        "longFlag": "--hitsound-volume",
+        "required": False,
+        "description": "Hitsound volume as an integer between 0 and 100, defaults to 20",
         "default": 20,
-        "format": int,
+        "type": int,
         "min": 0,
         "max": 100
     },
 
     "sampleset": {
+        "shortFlag": "-hs",
+        "longFlag": "--sampleset",
+        "required": False,
+        "description": "Hitsound sample set as either 'Soft', 'Normal' or 'Drum', defaults to Soft",
         "default": "Soft",
-        "format": str,
+        "type": str,
         "list": SAMPLESETS
     }
 
