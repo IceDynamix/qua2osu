@@ -36,6 +36,7 @@
 <span class="kn">import</span> <span class="nn">os</span>  <span class="c1"># for paths and directories</span>
 <span class="kn">import</span> <span class="nn">sys</span>  <span class="c1"># used only for sys.exit()</span>
 <span class="kn">import</span> <span class="nn">time</span>  <span class="c1"># to measure execution time</span>
+<span class="kn">import</span> <span class="nn">webbrowser</span>  <span class="c1"># to open the explorer cross-platform</span>
 
 <span class="kn">from</span> <span class="nn">constants</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">conversion</span> <span class="kn">import</span> <span class="n">convertMapset</span></pre></div>
@@ -346,7 +347,20 @@ the <code>convertMapset()</code> function</p>
     <span class="n">timeElapsed</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Finished converting all mapsets, &quot;</span>
-          <span class="sa">f</span><span class="s2">&quot;total time elapsed: </span><span class="si">{timeElapsed}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+          <span class="sa">f</span><span class="s2">&quot;total time elapsed: </span><span class="si">{timeElapsed}</span><span class="s2"> seconds&quot;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-21'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-21'>#</a>
+      </div>
+      <p>Opens output folder in explorer</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">absoluteOutputPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">])</span>
+    <span class="n">webbrowser</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;file:///&quot;</span> <span class="o">+</span> <span class="n">absoluteOutputPath</span><span class="p">)</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>

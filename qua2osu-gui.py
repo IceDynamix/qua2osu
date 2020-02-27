@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+import webbrowser  # to open the explorer cross-platform
 
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -176,6 +177,10 @@ class ConverterThread(QThread):
             f"Finished converting all mapsets,"
             f"total time elapsed: {timeElapsed} seconds"
         )
+
+        # Opens output folder in explorer
+        absoluteOutputPath = os.path.realpath(self.inputPath)
+        webbrowser.open("file:///" + absoluteOutputPath)
 
         return
 

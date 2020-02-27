@@ -5,6 +5,7 @@ import argparse  # parsing command line arguments
 import os  # for paths and directories
 import sys  # used only for sys.exit()
 import time  # to measure execution time
+import webbrowser  # to open the explorer cross-platform
 
 from constants import *
 from conversion import convertMapset
@@ -147,6 +148,10 @@ def main():
 
     print("Finished converting all mapsets, "
           f"total time elapsed: {timeElapsed} seconds")
+
+    # Opens output folder in explorer
+    absoluteOutputPath = os.path.realpath(args["input"])
+    webbrowser.open("file:///" + absoluteOutputPath)
 
 
 if __name__ == '__main__':
