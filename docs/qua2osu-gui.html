@@ -23,12 +23,13 @@
       <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">webbrowser</span>  <span class="c1"># to open the explorer cross-platform</span>
 
 <span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">PyQt5.QtGui</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="kn">import</span> <span class="o">*</span>
 
-<span class="kn">from</span> <span class="nn">convert</span> <span class="kn">import</span> <span class="n">convertMapset</span></pre></div>
+<span class="kn">from</span> <span class="nn">conversion</span> <span class="kn">import</span> <span class="n">convertMapset</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -409,30 +410,28 @@ which radio button is checked because this is horrible</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">updateStatus</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">&quot;No mapsets found in &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputPath</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">updateProgressbarMax</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">numberOfQpFiles</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">updateProgressbarMax</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">numberOfQpFiles</span><span class="p">)</span>
 
-            <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-            <span class="n">count</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">qpFilesInInputDir</span><span class="p">:</span>
-                <span class="n">filePath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputPath</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">1</span>
 
-                <span class="bp">self</span><span class="o">.</span><span class="n">updateStatus</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{count}</span><span class="s2">/</span><span class="si">{numberOfQpFiles}</span><span class="s2">) &quot;</span>
-                                       <span class="sa">f</span><span class="s2">&quot;Converting </span><span class="si">{filePath}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">qpFilesInInputDir</span><span class="p">:</span>
+            <span class="n">filePath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputPath</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
 
-                <span class="n">convertMapset</span><span class="p">(</span><span class="n">filePath</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputPath</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">)</span>
-                <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">incrementProgressbarValue</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">updateStatus</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{count}</span><span class="s2">/</span><span class="si">{numberOfQpFiles}</span><span class="s2">) &quot;</span>
+                                   <span class="sa">f</span><span class="s2">&quot;Converting </span><span class="si">{filePath}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-            <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-            <span class="n">timeElapsed</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">convertMapset</span><span class="p">(</span><span class="n">filePath</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputPath</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">)</span>
+            <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">incrementProgressbarValue</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">updateStatus</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Finished converting all mapsets,&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;total time elapsed: </span><span class="si">{timeElapsed}</span><span class="s2"> seconds&quot;</span>
-            <span class="p">)</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">timeElapsed</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
-            <span class="k">return</span></pre></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">updateStatus</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Finished converting all mapsets,&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;total time elapsed: </span><span class="si">{timeElapsed}</span><span class="s2"> seconds&quot;</span>
+        <span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -441,10 +440,13 @@ which radio button is checked because this is horrible</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-26'>#</a>
       </div>
-      <p>Custom QApplication class for the sole purpose of applying the Fusion style</p>
+      <p>Opens output folder in explorer</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">class</span> <span class="nc">IceApp</span><span class="p">(</span><span class="n">QApplication</span><span class="p">):</span></pre></div>
+      <div class="highlight"><pre>        <span class="n">absoluteOutputPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputPath</span><span class="p">)</span>
+        <span class="n">webbrowser</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;file:///&quot;</span> <span class="o">+</span> <span class="n">absoluteOutputPath</span><span class="p">)</span>
+
+        <span class="k">return</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -453,10 +455,10 @@ which radio button is checked because this is horrible</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-27'>#</a>
       </div>
-      
+      <p>Custom QApplication class for the sole purpose of applying the Fusion style</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre></pre></div>
+      <div class="highlight"><pre><span class="k">class</span> <span class="nc">IceApp</span><span class="p">(</span><span class="n">QApplication</span><span class="p">):</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -468,9 +470,7 @@ which radio button is checked because this is horrible</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">setStyle</span><span class="p">(</span><span class="s2">&quot;Fusion&quot;</span><span class="p">)</span></pre></div>
+      <div class="highlight"><pre></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -478,6 +478,20 @@ which radio button is checked because this is horrible</p>
     <div class='docs'>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-29'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setStyle</span><span class="p">(</span><span class="s2">&quot;Fusion&quot;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-30'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-30'>#</a>
       </div>
       
     </div>
