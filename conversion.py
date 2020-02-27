@@ -53,7 +53,8 @@ def convertGeneral(qua: object, options: object) -> str:
 
     # Attributes that exist in both games but are named differently
     for element in RENAMES["general"]:
-        lines.append(f"{generalRenames[element]}: {qua[element]}")
+        if element in qua:  # Exception case when AudioPreview doesn't exist
+            lines.append(f"{generalRenames[element]}: {qua[element]}")
 
     for attribute in generalDefaultValues:
         lines.append(f"{attribute}: {generalDefaultValues[attribute]}")
