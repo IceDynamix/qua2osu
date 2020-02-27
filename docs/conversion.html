@@ -154,8 +154,7 @@
     </div>
     <div class='code'>
       <div class="highlight"><pre>    <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">RENAMES</span><span class="p">[</span><span class="s2">&quot;general&quot;</span><span class="p">]:</span>
-        <span class="k">if</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">qua</span><span class="p">:</span>  <span class="c1"># Exception case when AudioPreview doesn&#39;t exist</span>
-            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{generalRenames[element]}</span><span class="s2">: </span><span class="si">{qua[element]}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{generalRenames[element]}</span><span class="s2">: </span><span class="si">{qua[element]}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="n">generalDefaultValues</span><span class="p">:</span>
         <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{attribute}</span><span class="s2">: </span><span class="si">{generalDefaultValues[attribute]}</span><span class="s2">&quot;</span><span class="p">)</span>
