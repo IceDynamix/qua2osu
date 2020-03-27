@@ -72,10 +72,10 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-4'>#</a>
       </div>
-      <p>Cleans the path by removing illegal characters and replacing spaces with underscores <em>(currently unused)</em></p>
+      <p>def cleanPath(path: str) -&gt; str:</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">cleanPath</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span></pre></div>
+      <div class="highlight"><pre><span class="c1">#     &quot;&quot;&quot;Cleans the path by removing illegal characters and replacing spaces with underscores *(currently unused)*&quot;&quot;&quot;</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -84,12 +84,13 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-5'>#</a>
       </div>
-      
+      <pre><code>path = REGEX_ILLEGAL_CHARACTERS.sub("", path)
+path = path.replace(" ", "_")
+return path
+</code></pre>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="n">path</span> <span class="o">=</span> <span class="n">REGEX_ILLEGAL_CHARACTERS</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
-    <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">path</span></pre></div>
+      <div class="highlight"><pre></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -110,10 +111,184 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-7'>#</a>
       </div>
-      <p>Generates the [General] section of the .osu</p>
+      <pre><code>lines = ["[General]"]
+generalRenames = RENAMES["general"]
+generalDefaultValues = DEFAULT_VALUES["general"]
+
+sampleSet = options["sampleSet"]
+lines.append(f"SampleSet: {sampleSet}")
+
+# Attributes that exist in both games but are named differently
+for element in RENAMES["general"]:
+</code></pre>
+<p>if element in qua:  # Exception case when AudioPreview doesn&rsquo;t exist
+       lines.append(f&rdquo;{generalRenames[element]}: {qua[element]}&rdquo;)</p>
+<pre><code>for attribute in generalDefaultValues:
+</code></pre>
+<p>lines.append(f&rdquo;{attribute}: {generalDefaultValues[attribute]}&rdquo;)</p>
+<pre><code>return "\n".join(lines)
+</code></pre>
+<h1>### Editor</h1>
+<p>def convertEditor() -&gt; str:
+Generates the [Editor] section of the .osu</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">convertGeneral</span><span class="p">(</span><span class="n">qua</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span></pre></div>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">convertGeneral</span><span class="p">(</span><span class="n">qua</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="s2">&quot;&quot;&quot;Generates the [General] section of the .osu</span>
+
+<span class="s2">    Currently generates following attributes:</span>
+
+<span class="s2">    - AudioFilename</span>
+<span class="s2">    - AudioLeadIn</span>
+<span class="s2">    - PreviewTime</span>
+<span class="s2">    - SampleSet</span>
+<span class="s2">    - StackLeniency</span>
+<span class="s2">    - Mode</span>
+<span class="s2">    - LetterboxInBreaks</span>
+<span class="s2">    - SpecialStyle</span>
+<span class="s2">    - WidescreenStoryboard</span>
+<span class="s2">#DIVIDER</span>
+
+<span class="s2">    Currently generates following attributes:</span>
+
+<span class="s2">    - Bookmarks</span>
+<span class="s2">    - DistanceSpacing</span>
+<span class="s2">    - BeatDivisor</span>
+<span class="s2">    - GridSize</span>
+<span class="s2">    - TimelineZoom</span>
+<span class="s2">#DIVIDER</span>
+
+<span class="s2">    Currently generates following attributes:</span>
+
+<span class="s2">    - AudioFile</span>
+<span class="s2">    - Artist</span>
+<span class="s2">    - ArtistUnicode</span>
+<span class="s2">    - Title</span>
+<span class="s2">    - TitleUnicode</span>
+<span class="s2">    - Source</span>
+<span class="s2">    - Creator</span>
+<span class="s2">    - Tags</span>
+<span class="s2">    - BeatmapID</span>
+<span class="s2">    - BeatmapSetID</span>
+<span class="s2">#DIVIDER</span>
+
+<span class="s2">    Currently generates following attributes:</span>
+
+<span class="s2">    - HPDrainRate</span>
+<span class="s2">    - CircleSize</span>
+<span class="s2">    - OverallDifficulty</span>
+<span class="s2">    - ApproachRate</span>
+<span class="s2">    - SliderMultiplier</span>
+<span class="s2">    - SliderTickrate</span>
+<span class="s2">#DIVIDER</span>
+
+<span class="s2">    Background syntax: `0,0,filename,0,0`</span>
+<span class="s2">#DIVIDER</span>
+
+<span class="s2">    Structure of a timing point:</span>
+<span class="s2">    [time,beatLength,meter,sampleSet,sampleIndex,volume,uninherited,effects]</span>
+
+<span class="s2">    - time (int)</span>
+<span class="s2">        - Start time of the timing section, in milliseconds from the</span>
+<span class="s2">        beginning of the beatmap&#39;s audio. The end of the timing section</span>
+<span class="s2">        is the next timing point&#39;s time (or never, if this is the</span>
+<span class="s2">        last timing point).</span>
+
+<span class="s2">    - beatLength : float</span>
+<span class="s2">        - For uninherited timing points, the duration of a beat, in</span>
+<span class="s2">            milliseconds.</span>
+<span class="s2">        - For inherited timing points, a negative inverse slider</span>
+<span class="s2">            velocity multiplier, as a percentage. For example, -50 would</span>
+<span class="s2">            make all sliders in this timing section twice</span>
+<span class="s2">            as fast as SliderMultiplier.</span>
+
+<span class="s2">    - meter (int)</span>
+<span class="s2">        - Amount of beats in a measure. Inherited timing points ignore</span>
+<span class="s2">        this property.</span>
+
+<span class="s2">    - sampleSet (int)</span>
+<span class="s2">        - Default sample set for hit objects (0 = beatmap default,</span>
+<span class="s2">        1 = normal, 2 = soft, 3 = drum).</span>
+
+<span class="s2">    - sampleIndex (int)</span>
+<span class="s2">        - Custom sample index for hit objects. 0 indicates osu!&#39;s default</span>
+<span class="s2">        hit sounds.</span>
+
+<span class="s2">    - volume (int)</span>
+<span class="s2">        - Volume percentage for hit objects.</span>
+
+<span class="s2">    - uninherited (0 or 1)</span>
+<span class="s2">        - Whether or not the timing point is uninherited.</span>
+
+<span class="s2">    - effects (int:int:...)</span>
+<span class="s2">        - Bit flags that give the timing point extra effects.</span>
+<span class="s2">#DIVIDER</span>
+
+<span class="s2">    - Types:</span>
+<span class="s2">        - 1 &lt;&lt; 0 : Hit circle (normal note in osu!mania)</span>
+<span class="s2">        - 1 &lt;&lt; 1 : Slider (unused in osu!mania)</span>
+<span class="s2">        - 1 &lt;&lt; 3 : Spinner (unused in osu!mania)</span>
+<span class="s2">        - 1 &lt;&lt; 7 : osu!mania hold (commonly referred to as long note or LN)</span>
+
+<span class="s2">    - Structure of a normal hit object:</span>
+<span class="s2">        - [x,y,time,type,hitSound,objectParams,hitSample]</span>
+<span class="s2">        - x (int)</span>
+<span class="s2">            - Determines the index of the column that the note will be in.</span>
+<span class="s2">            It is computed by floor(x * columnCount / 512) and</span>
+<span class="s2">            clamped between 0 and columnCount - 1.</span>
+<span class="s2">        - y (int)</span>
+<span class="s2">            - Unused in osu!mania, defaults to 192</span>
+<span class="s2">        - time (int)</span>
+<span class="s2">            - Time when the object is to be hit, in milliseconds from</span>
+<span class="s2">            the beginning of the beatmap&#39;s audio.</span>
+<span class="s2">        - type (int)</span>
+<span class="s2">            - Bit flags indicating the type of the object.</span>
+<span class="s2">       - hitSound (int,int,...)</span>
+<span class="s2">            - Extra parameters specific to the object&#39;s type.</span>
+<span class="s2">        - objectParams</span>
+<span class="s2">            - Extra parameters specific to the object&#39;s type.</span>
+<span class="s2">        - hitSample (int)</span>
+<span class="s2">            - bitwise flag</span>
+
+<span class="s2">    - Structure of a LN:</span>
+<span class="s2">        - [x,y,time,type,hitSound,endTime:hitSample]</span>
+<span class="s2">        - endTime (int)</span>
+<span class="s2">            - End time of the hold, in milliseconds from the</span>
+<span class="s2">            beginning of the beatmap&#39;s audio.</span>
+<span class="s2">#DIVIDER</span>
+
+<span class="s2">    All parts are split into different sections, defined by the .osu structure:</span>
+
+<span class="s2">    - General</span>
+<span class="s2">        - Contains general settings</span>
+<span class="s2">    - Editor</span>
+<span class="s2">        - Contains editor related settings</span>
+<span class="s2">    - Metadata</span>
+<span class="s2">        - Contains the metadata of the beatmap</span>
+<span class="s2">    - Difficulty</span>
+<span class="s2">        - Contains difficulty related settings</span>
+<span class="s2">    - Events</span>
+<span class="s2">        - Contains the background file name</span>
+<span class="s2">    - TimingPoints</span>
+<span class="s2">        - Contains the timing</span>
+<span class="s2">    - HitObjects</span>
+<span class="s2">        - Contains the hit objects (notes)</span>
+<span class="s2">#DIVIDER</span>
+
+<span class="s2">    Moves all files to a new directory and converts all .qua files to .osu files</span>
+
+<span class="s2">    This function is called in the GUI.</span>
+
+<span class="s2">    Options parameter is built up as following:</span>
+
+<span class="s2">        options = {</span>
+<span class="s2">            &quot;od&quot;: int,</span>
+<span class="s2">            &quot;hp&quot;: int,</span>
+<span class="s2">            &quot;hitSoundVolume&quot;: int,</span>
+<span class="s2">            &quot;sampleSet&quot;: [&quot;Soft&quot;,&quot;Normal&quot;,&quot;Drum&quot;]</span>
+<span class="s2">        }</span>
+
+</pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -122,26 +297,20 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-8'>#</a>
       </div>
-      <p>Currently generates following attributes:</p>
-<ul>
-<li>AudioFilename</li>
-<li>AudioLeadIn</li>
-<li>PreviewTime</li>
-<li>SampleSet</li>
-<li>StackLeniency</li>
-<li>Mode</li>
-<li>LetterboxInBreaks</li>
-<li>SpecialStyle</li>
-<li>WidescreenStoryboard</li>
-</ul>
+      <pre><code>lines = ["[Editor]"]
+editorDefaultValues = DEFAULT_VALUES["editor"]
+
+for attribute in editorDefaultValues:
+</code></pre>
+<p>lines.append(f&rdquo;{attribute}: {editorDefaultValues[attribute]}&rdquo;)</p>
+<pre><code>return "\n".join(lines)
+</code></pre>
+<h1>### Metadata</h1>
+<p>def convertMetadata(qua: object) -&gt; str:
+Generates the [Metadata] section of the .osu</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;[General]&quot;</span><span class="p">]</span>
-    <span class="n">generalRenames</span> <span class="o">=</span> <span class="n">RENAMES</span><span class="p">[</span><span class="s2">&quot;general&quot;</span><span class="p">]</span>
-    <span class="n">generalDefaultValues</span> <span class="o">=</span> <span class="n">DEFAULT_VALUES</span><span class="p">[</span><span class="s2">&quot;general&quot;</span><span class="p">]</span>
-
-    <span class="n">sampleSet</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;sampleSet&quot;</span><span class="p">]</span>
-    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SampleSet: </span><span class="si">{sampleSet}</span><span class="s2">&quot;</span><span class="p">)</span></pre></div>
+      <div class="highlight"><pre></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -150,17 +319,41 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-9'>#</a>
       </div>
-      <p>Attributes that exist in both games but are named differently</p>
+      <pre><code>lines = ["[Metadata]"]
+metadataRenames = RENAMES["metadata"]
+metadataDefaultValues = DEFAULT_VALUES["metadata"]
+
+for element in qua:
+</code></pre>
+<p># Attributes that exist in both games and are named the same
+   if element in [&ldquo;Artist&rdquo;, &ldquo;Title&rdquo;, &ldquo;Source&rdquo;, &ldquo;Creator&rdquo;]:
+       lines.append(f&rdquo;{element}:{qua[element]}&rdquo;)</p>
+<pre><code>   # osu! uses ArtistUnicode and TitleUnicode attributes
+   # to provide a romanized version of them. Since
+   # Quaver doesn't really work with them, they can be set
+   # to the same as the regular artist and title attribute
+   if element in ["Artist", "Title"]:
+       lines.append(f"{element}Unicode:{qua[element]}")
+</code></pre>
+<p># Attributes that exist in both games but are named differently
+   elif element in metadataRenames:
+       lines.append(f&rdquo;{metadataRenames[element]}:{qua[element]}&rdquo;)</p>
+<p># Adding Quaver to tags additionally to the already existing
+   # tags in the .qua
+   elif element == &ldquo;Tags&rdquo;:
+       tags = qua[&ldquo;Tags&rdquo;]
+       lines.append(f&rdquo;Tags:Quaver {tags}&rdquo;)</p>
+<pre><code>for attribute in metadataDefaultValues:
+</code></pre>
+<p>lines.append(f&rdquo;{attribute}:{metadataDefaultValues[attribute]}&rdquo;)</p>
+<pre><code>return "\n".join(lines)
+</code></pre>
+<h1>### Difficulty</h1>
+<p>def convertDifficulty(qua: object, options: object) -&gt; str:
+Generates the [Difficulty] section of the .osu</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">RENAMES</span><span class="p">[</span><span class="s2">&quot;general&quot;</span><span class="p">]:</span>
-        <span class="k">if</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">qua</span><span class="p">:</span>  <span class="c1"># Exception case when AudioPreview doesn&#39;t exist</span>
-            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{generalRenames[element]}</span><span class="s2">: </span><span class="si">{qua[element]}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="n">generalDefaultValues</span><span class="p">:</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{attribute}</span><span class="s2">: </span><span class="si">{generalDefaultValues[attribute]}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></pre></div>
+      <div class="highlight"><pre></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -169,7 +362,28 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-10'>#</a>
       </div>
-      <h3>Editor</h3>
+      <pre><code>lines = ["[Difficulty]"]
+difficultyDefaultValues = DEFAULT_VALUES["difficulty"]
+
+# Mode is provided either as "Keys4" or "Keys7", so this
+# extracts the number 4 or 7
+keyCount = qua["Mode"][-1:]
+od = options["od"]
+hp = options["hp"]
+
+# osu!mania uses Circle Size to save the key count
+lines.append(f"CircleSize: {keyCount}")
+lines.append(f"OverallDifficulty: {od}")
+lines.append(f"HPDrainRate: {hp}")
+
+for attribute in difficultyDefaultValues:
+</code></pre>
+<p>lines.append(f&rdquo;{attribute}: {difficultyDefaultValues[attribute]}&rdquo;)</p>
+<pre><code>return "\n".join(lines)
+</code></pre>
+<h1>### Events</h1>
+<p>def convertEvents(qua: object) -&gt; str:
+Generates the [Events] section of the .osu (only background)</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>
@@ -181,10 +395,17 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-11'>#</a>
       </div>
-      <p>Generates the [Editor] section of the .osu</p>
+      <pre><code>lines = ["[Events]"]
+lines.append(f'0,0,"{qua["BackgroundFile"]}",0,0')
+
+return "\n".join(lines)
+</code></pre>
+<h1>### Timing Points</h1>
+<p>def convertTimingPoints(qua: object, options: object) -&gt; str:
+Generates the [TimingPoints] section of the .osu</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">convertEditor</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span></pre></div>
+      <div class="highlight"><pre></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -193,23 +414,52 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-12'>#</a>
       </div>
-      <p>Currently generates following attributes:</p>
-<ul>
-<li>Bookmarks</li>
-<li>DistanceSpacing</li>
-<li>BeatDivisor</li>
-<li>GridSize</li>
-<li>TimelineZoom</li>
-</ul>
+      <pre><code>lines = ["[TimingPoints]"]
+hitSoundVolume = options["hitSoundVolume"]
+
+# Converts each timing point
+for timingPoint in qua["TimingPoints"]:
+</code></pre>
+<p># If any value is 0 then Quaver doesn&rsquo;t print it in the qua
+   startTime = timingPoint.get(&ldquo;StartTime&rdquo;, 0)
+   bpm = timingPoint.get(&ldquo;Bpm&rdquo;, 0)</p>
+<p>if bpm &lt;= 0:  # 0.0x BPM or negative BPM
+       # osu! can&rsquo;t really work with negative BPM and working with 0
+       # BPM is a pain by itself, so I&rsquo;m substituting the value
+       # with very low bpm value (0.000006 BPM) instead. It still shows as
+       # 0 BPM in song select though, because of rounding.
+       msPerBeat = -10e10
+   else:
+       msPerBeat = 60000 / bpm</p>
+<p>lines.append(f&rdquo;{startTime},{msPerBeat},4,0,0,{hitSoundVolume},1,0&rdquo;)</p>
+<pre><code># Converts each SV point
+for sv in qua["SliderVelocities"]:
+</code></pre>
+<p>startTime = sv.get(&ldquo;StartTime&rdquo;, 0)
+   multiplier = sv.get(&ldquo;Multiplier&rdquo;, 0)</p>
+<p>if multiplier &lt;= 0:  # 0.0x SV or negative SV
+       # Similar to BPM, osu! can&rsquo;t handle 0x or negative SV values, which is why
+       # I&rsquo;m substituting it with a very low value (0.00000001‬x). osu! clamps
+       # all SV values between 0.01x-10x, so putting -10e10 instead of -10e4
+       # doesn&rsquo;t <em>really</em> make a difference. That could change with lazer though
+       # so I&rsquo;m keeping it in.
+       svValue = -10e10</p>
+<p>else:
+       svValue = -100 / multiplier</p>
+<p>lines.append(f&rdquo;{startTime},{svValue},0,0,0,{hitSoundVolume},0,0&rdquo;)</p>
+<pre><code># I'm running through all uninherited points, then all inherited points,
+# which means that the lines aren't chronologically sorted.
+# osu! doesn't care about the order of the timing points though, so
+# I'm not sorting it.
+
+return "\n".join(lines)
+</code></pre>
+<h1>### Hit Objects</h1>
+<p>def convertHitObjects(qua: object) -&gt; str:
+Generates the [HitObjects] section of the .osu</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;[Editor]&quot;</span><span class="p">]</span>
-    <span class="n">editorDefaultValues</span> <span class="o">=</span> <span class="n">DEFAULT_VALUES</span><span class="p">[</span><span class="s2">&quot;editor&quot;</span><span class="p">]</span>
-
-    <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="n">editorDefaultValues</span><span class="p">:</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{attribute}</span><span class="s2">: </span><span class="si">{editorDefaultValues[attribute]}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></pre></div>
+      <div class="highlight"><pre></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -218,7 +468,44 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-13'>#</a>
       </div>
-      <h3>Metadata</h3>
+      <pre><code>lines = ["[HitObjects]"]
+
+# Mode is provided either as "Keys4" or "Keys7", so this
+# extracts the number 4 or 7
+numberOfColumns = int(qua["Mode"][-1:])
+
+for hitObject in qua["HitObjects"]:
+</code></pre>
+<p>startTime = hitObject.get(&ldquo;StartTime&rdquo;, 0)
+   lane = hitObject.get(&ldquo;Lane&rdquo;, 0)</p>
+<p># osu! uses the x-coordinate to determine the
+   # column, the max width of the osu playfield is 512
+   xPos = math.floor((lane / numberOfColumns) * 512) - 64</p>
+<p># y-coordinate is unused so default is set to 192, half of
+   # osu!s max height
+   yPos = 192</p>
+<p># Bitwise enum
+   hsBits = 0</p>
+<p># Don&rsquo;t ask me how, but I&rsquo;ve had hitsound values of -15 already, even though
+   # anything other than a comma-seperated string shouldn&rsquo;t even be possible
+   if &ldquo;HitSound&rdquo; in hitObject and not isinstance(hitObject[&ldquo;HitSound&rdquo;], int):
+       hitSounds = hitObject[&ldquo;HitSound&rdquo;].split(&ldquo;, &ldquo;)</p>
+<pre><code>   for hitSound in hitSounds:
+       hsBits += HIT_SOUNDS[hitSound]
+</code></pre>
+<p># Is Normal note
+   if &ldquo;EndTime&rdquo; not in hitObject:
+       line = f&rdquo;{xPos},{yPos},{startTime},1,{hsBits},0:0:0:0:&rdquo;</p>
+<p># LN
+   else:
+       endTime = hitObject[&ldquo;EndTime&rdquo;]
+       line = f&rdquo;{xPos},{yPos},{startTime},128,{hsBits},{endTime}:0:0:0:0:&rdquo;</p>
+<p>lines.append(line)</p>
+<pre><code>return "\n".join(lines)
+</code></pre>
+<h1>### Mapset</h1>
+<p>def convertQua2Osu(fileContent: str, options: object) -&gt; str:
+Converts a .qua beatmap file to a .osu beatmap file</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>
@@ -230,10 +517,29 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-14'>#</a>
       </div>
-      <p>Generates the [Metadata] section of the .osu</p>
+      <pre><code>qua = loadQua(fileContent)
+
+osu = "\n\n".join([
+</code></pre>
+<p>&rdquo;// This map was converted using qua2osu&rdquo;,
+   &ldquo;osu file format v14&rdquo;,
+   convertGeneral(qua, options),
+   convertEditor(),
+   convertMetadata(qua),
+   convertDifficulty(qua, options),
+   convertEvents(qua),
+   convertTimingPoints(qua, options),
+   convertHitObjects(qua)
+    ])</p>
+<pre><code># Extra empty line at the bottom to help some tools
+# who expect one (like the R programming language)
+return osu + "\n"
+</code></pre>
+<p>def convertMapset(path: str, outputFolder: str, options) -&gt; None:
+Converts a whole .qp mapset to a .osz mapset</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">convertMetadata</span><span class="p">(</span><span class="n">qua</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span></pre></div>
+      <div class="highlight"><pre></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -242,806 +548,40 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-15'>#</a>
       </div>
-      <p>Currently generates following attributes:</p>
-<ul>
-<li>AudioFile</li>
-<li>Artist</li>
-<li>ArtistUnicode</li>
-<li>Title</li>
-<li>TitleUnicode</li>
-<li>Source</li>
-<li>Creator</li>
-<li>Tags</li>
-<li>BeatmapID</li>
-<li>BeatmapSetID</li>
-</ul>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;[Metadata]&quot;</span><span class="p">]</span>
-    <span class="n">metadataRenames</span> <span class="o">=</span> <span class="n">RENAMES</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span>
-    <span class="n">metadataDefaultValues</span> <span class="o">=</span> <span class="n">DEFAULT_VALUES</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span>
+      <pre><code># Prefixing with "q_" to prevent osu from showing the wrong preview
+# backgrounds, because it takes the folder number to
+# choose the background for whatever reason
+folderName = "q_" + os.path.basename(path).replace(".qp", "")
+outputPath = os.path.join(outputFolder, folderName)
 
-    <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">qua</span><span class="p">:</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-16'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-16'>#</a>
-      </div>
-      <p>Attributes that exist in both games and are named the same</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>        <span class="k">if</span> <span class="n">element</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Artist&quot;</span><span class="p">,</span> <span class="s2">&quot;Title&quot;</span><span class="p">,</span> <span class="s2">&quot;Source&quot;</span><span class="p">,</span> <span class="s2">&quot;Creator&quot;</span><span class="p">]:</span>
-            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{element}</span><span class="s2">:</span><span class="si">{qua[element]}</span><span class="s2">&quot;</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-17'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-17'>#</a>
-      </div>
-      <p>osu! uses ArtistUnicode and TitleUnicode attributes
-to provide a romanized version of them. Since
-Quaver doesn&rsquo;t really work with them, they can be set
-to the same as the regular artist and title attribute</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>            <span class="k">if</span> <span class="n">element</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Artist&quot;</span><span class="p">,</span> <span class="s2">&quot;Title&quot;</span><span class="p">]:</span>
-                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{element}</span><span class="s2">Unicode:</span><span class="si">{qua[element]}</span><span class="s2">&quot;</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-18'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-18'>#</a>
-      </div>
-      <p>Attributes that exist in both games but are named differently</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>        <span class="k">elif</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">metadataRenames</span><span class="p">:</span>
-            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{metadataRenames[element]}</span><span class="s2">:</span><span class="si">{qua[element]}</span><span class="s2">&quot;</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-19'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-19'>#</a>
-      </div>
-      <p>Adding Quaver to tags additionally to the already existing
-tags in the .qua</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>        <span class="k">elif</span> <span class="n">element</span> <span class="o">==</span> <span class="s2">&quot;Tags&quot;</span><span class="p">:</span>
-            <span class="n">tags</span> <span class="o">=</span> <span class="n">qua</span><span class="p">[</span><span class="s2">&quot;Tags&quot;</span><span class="p">]</span>
-            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tags:Quaver </span><span class="si">{tags}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="n">metadataDefaultValues</span><span class="p">:</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{attribute}</span><span class="s2">:</span><span class="si">{metadataDefaultValues[attribute]}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-20'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-20'>#</a>
-      </div>
-      <h3>Difficulty</h3>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-21'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-21'>#</a>
-      </div>
-      <p>Generates the [Difficulty] section of the .osu</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">convertDifficulty</span><span class="p">(</span><span class="n">qua</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-22'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-22'>#</a>
-      </div>
-      <p>Currently generates following attributes:</p>
-<ul>
-<li>HPDrainRate</li>
-<li>CircleSize</li>
-<li>OverallDifficulty</li>
-<li>ApproachRate</li>
-<li>SliderMultiplier</li>
-<li>SliderTickrate</li>
-</ul>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;[Difficulty]&quot;</span><span class="p">]</span>
-    <span class="n">difficultyDefaultValues</span> <span class="o">=</span> <span class="n">DEFAULT_VALUES</span><span class="p">[</span><span class="s2">&quot;difficulty&quot;</span><span class="p">]</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-23'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-23'>#</a>
-      </div>
-      <p>Mode is provided either as &ldquo;Keys4&rdquo; or &ldquo;Keys7&rdquo;, so this
-extracts the number 4 or 7</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="n">keyCount</span> <span class="o">=</span> <span class="n">qua</span><span class="p">[</span><span class="s2">&quot;Mode&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">:]</span>
-    <span class="n">od</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;od&quot;</span><span class="p">]</span>
-    <span class="n">hp</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;hp&quot;</span><span class="p">]</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-24'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-24'>#</a>
-      </div>
-      <p>osu!mania uses Circle Size to save the key count</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CircleSize: </span><span class="si">{keyCount}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;OverallDifficulty: </span><span class="si">{od}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;HPDrainRate: </span><span class="si">{hp}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="n">difficultyDefaultValues</span><span class="p">:</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{attribute}</span><span class="s2">: </span><span class="si">{difficultyDefaultValues[attribute]}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-25'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-25'>#</a>
-      </div>
-      <h3>Events</h3>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-26'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-26'>#</a>
-      </div>
-      <p>Generates the [Events] section of the .osu (only background)</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">convertEvents</span><span class="p">(</span><span class="n">qua</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-27'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-27'>#</a>
-      </div>
-      <p>Background syntax: <code>0,0,filename,0,0</code></p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;[Events]&quot;</span><span class="p">]</span>
-    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;0,0,&quot;</span><span class="si">{qua[&quot;BackgroundFile&quot;]}</span><span class="s1">&quot;,0,0&#39;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-28'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-28'>#</a>
-      </div>
-      <h3>Timing Points</h3>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-29'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-29'>#</a>
-      </div>
-      <p>Generates the [TimingPoints] section of the .osu</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">convertTimingPoints</span><span class="p">(</span><span class="n">qua</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-30'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-30'>#</a>
-      </div>
-      <p>Structure of a timing point:
-[time,beatLength,meter,sampleSet,sampleIndex,volume,uninherited,effects]</p>
-<ul>
-<li>
-<p>time (int)</p>
-<ul>
-<li>Start time of the timing section, in milliseconds from the
-beginning of the beatmap&rsquo;s audio. The end of the timing section
-is the next timing point&rsquo;s time (or never, if this is the
-last timing point).</li>
-</ul>
-</li>
-<li>
-<p>beatLength : float</p>
-<ul>
-<li>For uninherited timing points, the duration of a beat, in
-    milliseconds.</li>
-<li>For inherited timing points, a negative inverse slider
-    velocity multiplier, as a percentage. For example, -50 would
-    make all sliders in this timing section twice
-    as fast as SliderMultiplier.</li>
-</ul>
-</li>
-<li>
-<p>meter (int)</p>
-<ul>
-<li>Amount of beats in a measure. Inherited timing points ignore
-this property.</li>
-</ul>
-</li>
-<li>
-<p>sampleSet (int)</p>
-<ul>
-<li>Default sample set for hit objects (0 = beatmap default,
-1 = normal, 2 = soft, 3 = drum).</li>
-</ul>
-</li>
-<li>
-<p>sampleIndex (int)</p>
-<ul>
-<li>Custom sample index for hit objects. 0 indicates osu!&rsquo;s default
-hit sounds.</li>
-</ul>
-</li>
-<li>
-<p>volume (int)</p>
-<ul>
-<li>Volume percentage for hit objects.</li>
-</ul>
-</li>
-<li>
-<p>uninherited (0 or 1)</p>
-<ul>
-<li>Whether or not the timing point is uninherited.</li>
-</ul>
-</li>
-<li>
-<p>effects (int:int:&hellip;)</p>
-<ul>
-<li>Bit flags that give the timing point extra effects.</li>
-</ul>
-</li>
-</ul>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;[TimingPoints]&quot;</span><span class="p">]</span>
-    <span class="n">hitSoundVolume</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;hitSoundVolume&quot;</span><span class="p">]</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-31'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-31'>#</a>
-      </div>
-      <p>Converts each timing point</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">for</span> <span class="n">timingPoint</span> <span class="ow">in</span> <span class="n">qua</span><span class="p">[</span><span class="s2">&quot;TimingPoints&quot;</span><span class="p">]:</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-32'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-32'>#</a>
-      </div>
-      <p>If any value is 0 then Quaver doesn&rsquo;t print it in the qua</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>        <span class="n">startTime</span> <span class="o">=</span> <span class="n">timingPoint</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;StartTime&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="n">bpm</span> <span class="o">=</span> <span class="n">timingPoint</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Bpm&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">bpm</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># 0.0x BPM or negative BPM</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-33'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-33'>#</a>
-      </div>
-      <p>osu! can&rsquo;t really work with negative BPM and working with 0
-BPM is a pain by itself, so I&rsquo;m substituting the value
-with very low bpm value (0.000006 BPM) instead. It still shows as
-0 BPM in song select though, because of rounding.</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>            <span class="n">msPerBeat</span> <span class="o">=</span> <span class="o">-</span><span class="mf">10e10</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">msPerBeat</span> <span class="o">=</span> <span class="mi">60000</span> <span class="o">/</span> <span class="n">bpm</span>
-
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{startTime}</span><span class="s2">,</span><span class="si">{msPerBeat}</span><span class="s2">,4,0,0,</span><span class="si">{hitSoundVolume}</span><span class="s2">,1,0&quot;</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-34'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-34'>#</a>
-      </div>
-      <p>Converts each SV point</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">for</span> <span class="n">sv</span> <span class="ow">in</span> <span class="n">qua</span><span class="p">[</span><span class="s2">&quot;SliderVelocities&quot;</span><span class="p">]:</span>
-        <span class="n">startTime</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;StartTime&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="n">multiplier</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Multiplier&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">multiplier</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># 0.0x SV or negative SV</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-35'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-35'>#</a>
-      </div>
-      <p>Similar to BPM, osu! can&rsquo;t handle 0x or negative SV values, which is why
-I&rsquo;m substituting it with a very low value (0.00000001‬x). osu! clamps
-all SV values between 0.01x-10x, so putting -10e10 instead of -10e4
-doesn&rsquo;t <em>really</em> make a difference. That could change with lazer though
-so I&rsquo;m keeping it in.</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>            <span class="n">svValue</span> <span class="o">=</span> <span class="o">-</span><span class="mf">10e10</span>
-
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">svValue</span> <span class="o">=</span> <span class="o">-</span><span class="mi">100</span> <span class="o">/</span> <span class="n">multiplier</span>
-
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{startTime}</span><span class="s2">,</span><span class="si">{svValue}</span><span class="s2">,0,0,0,</span><span class="si">{hitSoundVolume}</span><span class="s2">,0,0&quot;</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-36'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-36'>#</a>
-      </div>
-      <p>I&rsquo;m running through all uninherited points, then all inherited points,
-which means that the lines aren&rsquo;t chronologically sorted.
-osu! doesnt care about the order of the timing points though, so
-I&rsquo;m not sorting it.</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-37'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-37'>#</a>
-      </div>
-      <h3>Hit Objects</h3>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-38'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-38'>#</a>
-      </div>
-      <p>Generates the [HitObjects] section of the .osu</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">convertHitObjects</span><span class="p">(</span><span class="n">qua</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-39'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-39'>#</a>
-      </div>
-      <ul>
-<li>
-<p>Types:</p>
-<ul>
-<li>1 &lt;&lt; 0 : Hit circle (normal note in osu!mania)</li>
-<li>1 &lt;&lt; 1 : Slider (unused in osu!mania)</li>
-<li>1 &lt;&lt; 3 : Spinner (unused in osu!mania)</li>
-<li>1 &lt;&lt; 7 : osu!mania hold (commonly referred to as long note or LN)</li>
-</ul>
-</li>
-<li>
-<p>Structure of a normal hit object:</p>
-<ul>
-<li>[x,y,time,type,hitSound,objectParams,hitSample]</li>
-<li>x (int)<ul>
-<li>Determines the index of the column that the note will be in.
-It is computed by floor(x * columnCount / 512) and
-clamped between 0 and columnCount - 1.</li>
-</ul>
-</li>
-<li>y (int)<ul>
-<li>Unused in osu!mania, defaults to 192</li>
-</ul>
-</li>
-<li>time (int)<ul>
-<li>Time when the object is to be hit, in milliseconds from
-the beginning of the beatmap&rsquo;s audio.</li>
-</ul>
-</li>
-<li>type (int)<ul>
-<li>Bit flags indicating the type of the object.</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>
-<p>hitSound (int,int,&hellip;)
-        - Extra parameters specific to the object&rsquo;s type.</p>
-<ul>
-<li>objectParams<ul>
-<li>Extra parameters specific to the object&rsquo;s type.</li>
-</ul>
-</li>
-<li>hitSample (int)<ul>
-<li>bitwise flag</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>
-<p>Structure of a LN:</p>
-<ul>
-<li>[x,y,time,type,hitSound,endTime:hitSample]</li>
-<li>endTime (int)<ul>
-<li>End time of the hold, in milliseconds from the
-beginning of the beatmap&rsquo;s audio.</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;[HitObjects]&quot;</span><span class="p">]</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-40'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-40'>#</a>
-      </div>
-      <p>Mode is provided either as &ldquo;Keys4&rdquo; or &ldquo;Keys7&rdquo;, so this
-extracts the number 4 or 7</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="n">numberOfCcolumns</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">qua</span><span class="p">[</span><span class="s2">&quot;Mode&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">:])</span>
-
-    <span class="k">for</span> <span class="n">hitObject</span> <span class="ow">in</span> <span class="n">qua</span><span class="p">[</span><span class="s2">&quot;HitObjects&quot;</span><span class="p">]:</span>
-
-        <span class="n">startTime</span> <span class="o">=</span> <span class="n">hitObject</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;StartTime&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="n">lane</span> <span class="o">=</span> <span class="n">hitObject</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Lane&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-41'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-41'>#</a>
-      </div>
-      <p>osu! uses the x-coordinate to determine the
-column, the max width of the osu playfield is 512</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>        <span class="n">xPos</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">((</span><span class="n">lane</span> <span class="o">/</span> <span class="n">numberOfCcolumns</span><span class="p">)</span> <span class="o">*</span> <span class="mi">512</span><span class="p">)</span> <span class="o">-</span> <span class="mi">64</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-42'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-42'>#</a>
-      </div>
-      <p>y-coordinate is unused so default is set to 192, half of
-osu!s max height</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>        <span class="n">yPos</span> <span class="o">=</span> <span class="mi">192</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-43'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-43'>#</a>
-      </div>
-      <p>Bitwise enum</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>        <span class="n">hsBits</span> <span class="o">=</span> <span class="mi">0</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-44'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-44'>#</a>
-      </div>
-      <p>Don&rsquo;t ask me how, but I&rsquo;ve had hitsound values of -15 already, even though
-anything other than a comma-seperated string shouldn&rsquo;t even be possible</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>        <span class="k">if</span> <span class="s2">&quot;HitSound&quot;</span> <span class="ow">in</span> <span class="n">hitObject</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hitObject</span><span class="p">[</span><span class="s2">&quot;HitSound&quot;</span><span class="p">],</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="n">hitSounds</span> <span class="o">=</span> <span class="n">hitObject</span><span class="p">[</span><span class="s2">&quot;HitSound&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="p">)</span>
-
-            <span class="k">for</span> <span class="n">hitSound</span> <span class="ow">in</span> <span class="n">hitSounds</span><span class="p">:</span>
-                <span class="n">hsBits</span> <span class="o">+=</span> <span class="n">HIT_SOUNDS</span><span class="p">[</span><span class="n">hitSound</span><span class="p">]</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-45'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-45'>#</a>
-      </div>
-      <p>Is Normal note</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>        <span class="k">if</span> <span class="s2">&quot;EndTime&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">hitObject</span><span class="p">:</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{xPos}</span><span class="s2">,</span><span class="si">{yPos}</span><span class="s2">,</span><span class="si">{startTime}</span><span class="s2">,1,</span><span class="si">{hsBits}</span><span class="s2">,0:0:0:0:&quot;</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-46'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-46'>#</a>
-      </div>
-      <p>LN</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>        <span class="k">else</span><span class="p">:</span>
-            <span class="n">endTime</span> <span class="o">=</span> <span class="n">hitObject</span><span class="p">[</span><span class="s2">&quot;EndTime&quot;</span><span class="p">]</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{xPos}</span><span class="s2">,</span><span class="si">{yPos}</span><span class="s2">,</span><span class="si">{startTime}</span><span class="s2">,128,</span><span class="si">{hsBits}</span><span class="s2">,</span><span class="si">{endTime}</span><span class="s2">:0:0:0:0:&quot;</span>
-
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-47'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-47'>#</a>
-      </div>
-      <h3>Mapset</h3>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-48'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-48'>#</a>
-      </div>
-      <p>Converts a .qua beatmap file to a .osu beatmap file</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">convertQua2Osu</span><span class="p">(</span><span class="n">fileContent</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-49'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-49'>#</a>
-      </div>
-      <p>All parts are split into different sections, defined by the .osu structure:</p>
-<ul>
-<li>General<ul>
-<li>Contains general settings</li>
-</ul>
-</li>
-<li>Editor<ul>
-<li>Contains editor related settings</li>
-</ul>
-</li>
-<li>Metadata<ul>
-<li>Contains the metadata of the beatmap</li>
-</ul>
-</li>
-<li>Difficulty<ul>
-<li>Contains difficulty related settings</li>
-</ul>
-</li>
-<li>Events<ul>
-<li>Contains the background file name</li>
-</ul>
-</li>
-<li>TimingPoints<ul>
-<li>Contains the timing</li>
-</ul>
-</li>
-<li>HitObjects<ul>
-<li>Contains the hit objects (notes)</li>
-</ul>
-</li>
-</ul>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="n">qua</span> <span class="o">=</span> <span class="n">loadQua</span><span class="p">(</span><span class="n">fileContent</span><span class="p">)</span>
-
-    <span class="n">osu</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
-        <span class="s2">&quot;// This map was converted using qua2osu&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;osu file format v14&quot;</span><span class="p">,</span>
-        <span class="n">convertGeneral</span><span class="p">(</span><span class="n">qua</span><span class="p">,</span> <span class="n">options</span><span class="p">),</span>
-        <span class="n">convertEditor</span><span class="p">(),</span>
-        <span class="n">convertMetadata</span><span class="p">(</span><span class="n">qua</span><span class="p">),</span>
-        <span class="n">convertDifficulty</span><span class="p">(</span><span class="n">qua</span><span class="p">,</span> <span class="n">options</span><span class="p">),</span>
-        <span class="n">convertEvents</span><span class="p">(</span><span class="n">qua</span><span class="p">),</span>
-        <span class="n">convertTimingPoints</span><span class="p">(</span><span class="n">qua</span><span class="p">,</span> <span class="n">options</span><span class="p">),</span>
-        <span class="n">convertHitObjects</span><span class="p">(</span><span class="n">qua</span><span class="p">)</span>
-    <span class="p">])</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-50'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-50'>#</a>
-      </div>
-      <p>Extra empty line at the bottom to help some tools
-who expect one (like the R programming language)</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">return</span> <span class="n">osu</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-51'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-51'>#</a>
-      </div>
-      <p>Converts a whole .qp mapset to a .osz mapset</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">convertMapset</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">outputFolder</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-52'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-52'>#</a>
-      </div>
-      <p>Moves all files to a new directory and converts all .qua files to .osu files</p>
-<p>This function is called in the GUI.</p>
-<p>Options parameter is built up as following:</p>
-<pre><code>options = {
-    "od": int,
-    "hp": int,
-    "hitSoundVolume": int,
-    "sampleSet": ["Soft","Normal","Drum"]
-}
+# Opens the .qp (.zip) mapset file and extracts it into a folder in the same directory
+with zipfile.ZipFile(path, "r") as oldDir:
 </code></pre>
+<p>oldDir.extractall(outputPath)</p>
+<pre><code># Converts each .qua difficulty file
+for file in os.listdir(outputPath):
+</code></pre>
+<p>filePath = os.path.join(outputPath, file)</p>
+<p># Replaces each .qua file with the converted .osu file
+   if file.endswith(&ldquo;.qua&rdquo;):</p>
+<pre><code>   with open(filePath, "r") as openedFile:
+       fileContent = openedFile.read()
+       osu = convertQua2Osu(fileContent, options)
+
+       with open(filePath.replace(".qua", ".osu"), "w+") as newFile:
+           newFile.write(osu)
+
+   os.remove(filePath)
+
+# Creates a new .osz (.zip) mapset file
+with zipfile.ZipFile(outputPath + ".osz", "w") as newDir:
+</code></pre>
+<p>for root, dirs, files in os.walk(outputPath):
+       for file in files:
+           newDir.write(os.path.join(root, file), file)</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-53'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-53'>#</a>
-      </div>
-      <p>Prefixing with &ldquo;q_&rdquo; to prevent osu from showing the wrong preview
-backgrounds, because it takes the folder number to
-choose the background for whatever reason</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="n">folderName</span> <span class="o">=</span> <span class="s2">&quot;q_&quot;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.qp&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-    <span class="n">outputPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outputFolder</span><span class="p">,</span> <span class="n">folderName</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-54'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-54'>#</a>
-      </div>
-      <p>Opens the .qp (.zip) mapset file and extracts it into a folder in the same directory</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">oldDir</span><span class="p">:</span>
-        <span class="n">oldDir</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="n">outputPath</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-55'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-55'>#</a>
-      </div>
-      <p>Converts each .qua difficulty file</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">outputPath</span><span class="p">):</span>
-        <span class="n">filePath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outputPath</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-56'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-56'>#</a>
-      </div>
-      <p>Replaces each .qua file with the converted .osu file</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>        <span class="k">if</span> <span class="n">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.qua&quot;</span><span class="p">):</span>
-
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filePath</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">openedFile</span><span class="p">:</span>
-                <span class="n">fileContent</span> <span class="o">=</span> <span class="n">openedFile</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-                <span class="n">osu</span> <span class="o">=</span> <span class="n">convertQua2Osu</span><span class="p">(</span><span class="n">fileContent</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
-
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filePath</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.qua&quot;</span><span class="p">,</span> <span class="s2">&quot;.osu&quot;</span><span class="p">),</span> <span class="s2">&quot;w+&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">newFile</span><span class="p">:</span>
-                    <span class="n">newFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">osu</span><span class="p">)</span>
-
-            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">filePath</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-57'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-57'>#</a>
-      </div>
-      <p>Creates a new .osz (.zip) mapset file</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">outputPath</span> <span class="o">+</span> <span class="s2">&quot;.osz&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">newDir</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">outputPath</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
-                <span class="n">newDir</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">file</span><span class="p">),</span> <span class="n">file</span><span class="p">)</span>
-
-</pre></div>
     </div>
   </div>
   <div class='clearall'></div>
