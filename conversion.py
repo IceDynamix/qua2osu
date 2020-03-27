@@ -17,12 +17,12 @@ def loadQua(fileContent: str) -> object:
     return qua
 
 
-def cleanPath(path: str) -> str:
-    """Cleans the path by removing illegal characters and replacing spaces with underscores *(currently unused)*"""
+# def cleanPath(path: str) -> str:
+#     """Cleans the path by removing illegal characters and replacing spaces with underscores *(currently unused)*"""
 
-    path = REGEX_ILLEGAL_CHARACTERS.sub("", path)
-    path = path.replace(" ", "_")
-    return path
+#     path = REGEX_ILLEGAL_CHARACTERS.sub("", path)
+#     path = path.replace(" ", "_")
+#     return path
 
 
 # ### General
@@ -276,7 +276,7 @@ def convertTimingPoints(qua: object, options: object) -> str:
 
     # I'm running through all uninherited points, then all inherited points,
     # which means that the lines aren't chronologically sorted.
-    # osu! doesnt care about the order of the timing points though, so
+    # osu! doesn't care about the order of the timing points though, so
     # I'm not sorting it.
 
     return "\n".join(lines)
@@ -325,7 +325,7 @@ def convertHitObjects(qua: object) -> str:
 
     # Mode is provided either as "Keys4" or "Keys7", so this
     # extracts the number 4 or 7
-    numberOfCcolumns = int(qua["Mode"][-1:])
+    numberOfColumns = int(qua["Mode"][-1:])
 
     for hitObject in qua["HitObjects"]:
 
@@ -334,7 +334,7 @@ def convertHitObjects(qua: object) -> str:
 
         # osu! uses the x-coordinate to determine the
         # column, the max width of the osu playfield is 512
-        xPos = math.floor((lane / numberOfCcolumns) * 512) - 64
+        xPos = math.floor((lane / numberOfColumns) * 512) - 64
 
         # y-coordinate is unused so default is set to 192, half of
         # osu!s max height

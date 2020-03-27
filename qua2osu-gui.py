@@ -179,7 +179,7 @@ class ConverterThread(QThread):
         )
 
         # Opens output folder in explorer
-        absoluteOutputPath = os.path.realpath(self.inputPath)
+        absoluteOutputPath = os.path.realpath(self.outputPath)
         webbrowser.open("file:///" + absoluteOutputPath)
 
         return
