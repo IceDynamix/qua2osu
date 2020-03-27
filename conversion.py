@@ -17,12 +17,12 @@ def loadQua(fileContent: str) -> object:
     return qua
 
 
-def cleanPath(path: str) -> str:
-    """Cleans the path by removing illegal characters and replacing spaces with underscores *(currently unused)*"""
+# def cleanPath(path: str) -> str:
+#     """Cleans the path by removing illegal characters and replacing spaces with underscores *(currently unused)*"""
 
-    path = REGEX_ILLEGAL_CHARACTERS.sub("", path)
-    path = path.replace(" ", "_")
-    return path
+#     path = REGEX_ILLEGAL_CHARACTERS.sub("", path)
+#     path = path.replace(" ", "_")
+#     return path
 
 
 # ### General
