@@ -150,7 +150,7 @@ def main():
           f"total time elapsed: {timeElapsed} seconds")
 
     # Opens output folder in explorer
-    absoluteOutputPath = os.path.realpath(args["input"])
+    absoluteOutputPath = os.path.realpath(args["output"])
     webbrowser.open("file:///" + absoluteOutputPath)
 
 
