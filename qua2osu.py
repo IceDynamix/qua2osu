@@ -1,98 +1,210 @@
 """Command-line tool for map conversion"""
 
+
 # ## Imports
+
+
 import argparse  # parsing command line arguments
 import os  # for paths and directories
+import re
 import sys  # used only for sys.exit()
 import time  # to measure execution time
 import webbrowser  # to open the explorer cross-platform
+import zipfile  # to handle .zip files (.qua and .osz)
 
-from constants import *
-from conversion import convertMapset
+from reamber.algorithms.convert import QuaToOsu
+from reamber.quaver import QuaMap
+
+# ## Constants
+
+
+SAMPLESETS = [
+    "Soft",
+    "Normal",
+    "Drum"
+]
+
 
 # ## Functions
 
 
 def initArgParser() -> argparse.ArgumentParser:
-    """Creates an argument parser with all of the arguments already added
+    """Creates an argument parser with all of the arguments already added"""
 
-    Uses `COMMAND_LINE_ARGS` from constants.py to generate each argument
-    """
+    argParser = argparse.ArgumentParser("Converts .qp files to .osz files")
 
-    argParser = argparse.ArgumentParser()
-
-    for arg in COMMAND_LINE_ARGS:
-        argument = COMMAND_LINE_ARGS[arg]
-
-        if "list" in argument:
-            argParser.add_argument(
-                argument["shortFlag"],  # Example: "-i", "-od"
-                argument["longFlag"],  # Example: "--help", "--sampleset"
-                required=argument["required"],
-                help=argument["description"],
-                default=argument["default"],
-                type=argument["type"],
-                # This is literally the only line that was added
-                # please tell me there's a better way
-                choices=argument["list"]
-            )
-
+    def qpOrDirPath(inputPath):
+        if (inputPath.endswith(".qp") and os.path.isFile(inputPath)) or os.path.isdir(inputPath):
+            return inputPath
         else:
-            argParser.add_argument(
-                argument["shortFlag"],
-                argument["longFlag"],
-                required=argument["required"],
-                help=argument["description"],
-                default=argument["default"],
-                type=argument["type"]
-            )
+            raise argparse.ArgumentTypeError("Path is not a directory or not a .qp file")
+
+    argParser.add_argument(
+        "input",
+        help="Paths of directories containing .qp files, or direct paths to .qp files. Both are possible.",
+        nargs="*",
+        type=qpOrDirPath
+    )
+
+    def directory(path):
+        if os.path.isdir(path):
+            return path
+        raise argparse.ArgumentTypeError("Not a valid path")
+
+    argParser.add_argument(
+        "-o",
+        "--output",
+        required=False,
+        help="Path of the output folder, defaults to ./output",
+        default="./output",
+        type=directory
+    )
+
+    def diffValue(x):
+        x = float(x)
+        if x >= 0 and x <= 10:
+            return x
+        else:
+            raise argparse.ArgumentTypeError("Value must be larger between 0 and 10")
+
+    argParser.add_argument(
+        "-od",
+        "--overall-difficulty",
+        required=False,
+        help="Overall difficulty as an integer between 0 and 10, defaults to 8",
+        default=8,
+        type=diffValue
+    )
+
+    argParser.add_argument(
+        "-hp",
+        "--hp-drain",
+        required=False,
+        help="HP drain as an integer between 0 and 10, defaults to 8",
+        default=8,
+        type=diffValue
+    )
+
+    def hsVolume(n):
+        n = int(n)
+        if n >= 0 and n <= 100:
+            return n
+        else:
+            raise argparse.ArgumentTypeError("Value must be between 0 and 100")
+
+    argParser.add_argument(
+        "-hv",
+        "--hitsound-volume",
+        required=False,
+        help="Hitsound volume as an integer between 0 and 100, defaults to 20",
+        default=20,
+        type=hsVolume
+    )
+
+    argParser.add_argument(
+        "-hs",
+        "--sampleset",
+        required=False,
+        help="Hitsound sample set as either 'Soft', 'Normal' or 'Drum', defaults to Soft",
+        default="Soft",
+        type=str,
+        choices=SAMPLESETS
+    )
+
+    argParser.add_argument(
+        "-p",
+        "--preserve-folder-structure",
+        required=False,
+        help="Outputs in original directory structure if specified",
+        action="store_true"
+    )
+
+    argParser.add_argument(
+        "-r",
+        "--recursive-search",
+        required=False,
+        help="Looks for .qp in all subdirectories of given directories if specified",
+        action="store_true"
+    )
 
     return argParser
 
 
-def validateArgs(args) -> dict:
-    """Validates all input arguments"""
+def searchForQpFiles(directory: str, qpList: list, recursive: bool) -> list:
+    for path in os.listdir(directory):
+        fullRelativePath = os.path.join(directory, path)
+        if os.path.isfile(fullRelativePath) and fullRelativePath.endswith(".qp"):
+            qpList.append(os.path.normpath(fullRelativePath))
+        elif os.path.isdir(fullRelativePath) and recursive:
+            searchForQpFiles(fullRelativePath, qpList, recursive)
 
-    # Check if script was run without any arguments, enter
-    # command window input mode if yes
-    hasArguments = False
-    for arg in args:
-        if args[arg] is not None:
-            hasArguments = True
-            break
 
-    if not hasArguments:
-        args["input"] = input("Please enter your input folder: ")
-        args["output"] = input("Please enter your output folder: ")
+def convertDifficulties(path: str, outputFolder: str, options) -> None:
+    """Converts a whole .qp mapset to a .osz mapset
 
-    # Validate each argument, set to default if bad
-    # (only used for value in bounds checking at the moment)
-    for arg in args:
-        argumentObject = COMMAND_LINE_ARGS[arg]
+    Moves all files to a new directory and converts all .qua files to .osu files
 
-        # Out of bounds check (only applies to OD and HP for now)
-        valueTooLow = "min" in argumentObject and args[arg] < argumentObject["min"]
-        valueTooHigh = "max" in argumentObject and args[arg] > argumentObject["max"]
+    This function is called in the GUI.
 
-        if valueTooLow:
-            print(f"{arg} must be > {argumentObject['min']}")
-            sys.exit(1)
+    Options parameter is built up as following:
 
-        elif valueTooHigh:
-            print(f"{arg} must be < {argumentObject['max']}")
-            sys.exit(1)
+        options = {
+            "od": int,
+            "hp": int,
+            "hitSoundVolume": int,
+            "sampleSet": ["Soft","Normal","Drum"]
+        }
+    """
 
-    # Checks if the given input path exists, exits if not
-    if not os.path.exists(args["input"]):
-        print("Input folder does not exist")
-        sys.exit(1)
+    # Prefixing with "q_" to prevent osu from showing the wrong preview
+    # backgrounds, because it takes the folder number to
+    # choose the background for whatever reason
+    folderName = "q_" + os.path.basename(path).replace(".qp", "")
+    outputPath = os.path.join(outputFolder, folderName)
 
-    # Checks if output path exists, creates a new folder if not
-    if not os.path.exists(args["output"]):
-        os.mkdir(args["output"])
-        print("New output folder was created")
+    # Opens the .qp (.zip) mapset file and extracts it into a folder in the same directory
+    with zipfile.ZipFile(path, "r") as oldDir:
+        oldDir.extractall(outputPath)
 
-    return args
+    # Converts each .qua difficulty file
+    for file in os.listdir(outputPath):
+        filePath = os.path.join(outputPath, file)
+
+        # Replaces each .qua file with the converted .osu file, uses Evening's reamber package
+        if file.endswith(".qua"):
+            qua = QuaMap.readFile(filePath)
+            convertedOsu = QuaToOsu.convert(qua)
+
+            if options["od"]:
+                convertedOsu.overallDifficulty = options["od"]
+            if options["hp"]:
+                convertedOsu.hpDrainRate = options["hp"]
+
+            if options["hitSoundVolume"] or options["sampleset"]:
+                for list in [convertedOsu.bpms.data(), convertedOsu.svs.data()]:
+                    for element in list:
+                        if options["hitSoundVolume"]:
+                            element.volume = options["hitSoundVolume"]
+                        if options["sampleSet"]:
+                            element.sampleSet = SAMPLESETS.index(options["sampleSet"])
+
+            newFileName = re.sub(r"\.qua$", ".osu", filePath, 1, re.MULTILINE)
+            convertedOsu.writeFile(newFileName)
+            os.remove(filePath)
+
+    # Creates a new .osz (.zip) mapset file
+    with zipfile.ZipFile(outputPath + ".osz", "w") as newDir:
+        for root, dirs, files in os.walk(outputPath):
+            for file in files:
+                newDir.write(os.path.join(root, file), file)
+
+    for root, dirs, files in os.walk(outputPath, topdown=False):
+        for name in files:
+            os.remove(os.path.join(root, name))
+        for name in dirs:
+            os.rmdir(os.path.join(root, name))
+
+    os.rmdir(outputPath)
 
 
 # ### Main
@@ -101,27 +213,31 @@ def validateArgs(args) -> dict:
 def main():
     """Runs the map file conversions
 
-    Run `py qua2osu.py --help` for help with command line arguments or just
-    run `py qua2osu.py` by itself if you want to make do without the extra
-    options
+    Run `py qua2osu.py --help` for help with command line arguments
     """
 
     argParser = initArgParser()
-    args = validateArgs(vars(argParser.parse_args()))
+    args = vars(argParser.parse_args())
+
+    if len(args["input"]) == 0:
+        print("Please specify an input! (Paths to directories containing .qp files or .qp files directly)")
+        sys.exit(1)
 
     qpFilesInInputDir = []
 
     # Filters for all files that end with .qp and puts the
     # complete path of the files into an array
-    for file in os.listdir(args["input"]):
-        path = os.path.join(args["input"], file)
-        if (file.endswith('.qp') and os.path.isfile(path)):
-            qpFilesInInputDir.append(file)
 
-    numberOfQpFiles = len(qpFilesInInputDir)
+    for path in args["input"]:
+        if os.path.isfile(path) and path.endswith(".qp"):
+            qpFilesInInputDir.append(path)
+        elif os.path.isdir(path):
+            searchForQpFiles(path, qpFilesInInputDir, args["recursive_search"])
 
-    if numberOfQpFiles == 0:
-        print("No mapsets found in " + args["input"])
+    print(qpFilesInInputDir)
+
+    if len(qpFilesInInputDir) == 0:
+        print("No mapsets found")
         sys.exit(1)
 
     # Assigns the arguments to an options object to pass to
@@ -138,16 +254,20 @@ def main():
 
     # Run the conversion for each .qp file
     for file in qpFilesInInputDir:
-        filePath = os.path.join(args["input"], file)
-        print(f"Converting {filePath}")
-        convertMapset(filePath, args["output"], options)
+        basePath = os.path.dirname(file) if args["preserve_folder_structure"] else ""
+
+        outputPath = os.path.join(args["output"], basePath)
+        if not os.path.exists(outputPath):
+            os.mkdir(outputPath)
+
+        print(f"Converting {file}")
+        convertDifficulties(file, outputPath, options)
 
     # Stops the timer for the total execution time
     end = time.time()
     timeElapsed = round(end - start, 2)
 
-    print("Finished converting all mapsets, "
-          f"total time elapsed: {timeElapsed} seconds")
+    print(f"Finished converting all mapsets, total time elapsed: {timeElapsed} seconds")
 
     # Opens output folder in explorer
     absoluteOutputPath = os.path.realpath(args["output"])
