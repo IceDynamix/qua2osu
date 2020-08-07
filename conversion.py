@@ -5,7 +5,6 @@ import zipfile  # to handle .zip files (.qua and .osz)
 
 from reamber.quaver import QuaMap
 from reamber.algorithms.convert import QuaToOsu
-from reamber import osu
 
 from constants import *
 
@@ -43,7 +42,7 @@ def convertMapset(path: str, outputFolder: str, options) -> None:
     for file in os.listdir(outputPath):
         filePath = os.path.join(outputPath, file)
 
-        # Replaces each .qua file with the converted .osu file
+        # Replaces each .qua file with the converted .osu file, uses Evening's reamber package
         if file.endswith(".qua"):
             qua = QuaMap.readFile(filePath)
             convertedOsu = QuaToOsu.convert(qua)
