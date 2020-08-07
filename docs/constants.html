@@ -29,23 +29,6 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
-      <p>Hitsounds enum</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="n">HIT_SOUNDS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;Normal&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-    <span class="s2">&quot;Whistle&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
-    <span class="s2">&quot;Finish&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
-    <span class="s2">&quot;Clap&quot;</span><span class="p">:</span> <span class="mi">8</span>
-<span class="p">}</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-2'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-2'>#</a>
-      </div>
       <p>Samplesets list</p>
     </div>
     <div class='code'>
@@ -57,113 +40,10 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-3'>
+  <div class='section' id='section-2'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-3'>#</a>
-      </div>
-      <p>Dictionary for attributes that exist in both games, but are named differently</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-4'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-4'>#</a>
-      </div>
-      <p>quaverAttribute -&gt; osuAttribute</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="n">RENAMES</span> <span class="o">=</span> <span class="p">{</span>
-
-    <span class="s2">&quot;general&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;AudioFile&quot;</span><span class="p">:</span> <span class="s2">&quot;AudioFilename&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;SongPreviewTime&quot;</span><span class="p">:</span> <span class="s2">&quot;PreviewTime&quot;</span>
-    <span class="p">},</span>
-
-    <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;DifficultyName&quot;</span><span class="p">:</span> <span class="s2">&quot;Version&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;SongPreviewTime&quot;</span><span class="p">:</span> <span class="s2">&quot;PreviewTime&quot;</span>
-    <span class="p">},</span>
-
-<span class="p">}</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-5'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-5'>#</a>
-      </div>
-      <p>For attributes that should be left the way they are.</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-6'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-6'>#</a>
-      </div>
-      <p>attribute -&gt; default value</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="n">DEFAULT_VALUES</span> <span class="o">=</span> <span class="p">{</span>
-
-    <span class="s2">&quot;general&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;AudioLeadIn&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="s2">&quot;Countdown&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="s2">&quot;StackLeniency&quot;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
-        <span class="s2">&quot;Mode&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>  <span class="c1"># mania</span>
-        <span class="s2">&quot;LetterboxInBreaks&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="s2">&quot;SpecialStyle&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="s2">&quot;WidescreenStoryboard&quot;</span><span class="p">:</span> <span class="mi">0</span>
-    <span class="p">},</span>
-
-    <span class="s2">&quot;editor&quot;</span><span class="p">:</span> <span class="p">{</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-7'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-7'>#</a>
-      </div>
-      <p>If bookmarks were to be set to None,
-it would print out &ldquo;None&rdquo; when casted to a string</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>        <span class="s2">&quot;Bookmarks&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DistanceSpacing&quot;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span>
-        <span class="s2">&quot;BeatDivisor&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
-        <span class="s2">&quot;GridSize&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
-        <span class="s2">&quot;TimelineZoom&quot;</span><span class="p">:</span> <span class="mf">2.5</span>
-    <span class="p">},</span>
-
-    <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;BeatmapID&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>  <span class="c1"># unsubmitted</span>
-        <span class="s2">&quot;BeatmapSetID&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span>
-    <span class="p">},</span>
-
-    <span class="s2">&quot;difficulty&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;ApproachRate&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-        <span class="s2">&quot;SliderMultiplier&quot;</span><span class="p">:</span> <span class="mf">1.4</span><span class="p">,</span>
-        <span class="s2">&quot;SliderTickRate&quot;</span><span class="p">:</span> <span class="mi">1</span>
-    <span class="p">},</span>
-
-<span class="p">}</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-8'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-8'>#</a>
+        <a class='octothorpe' href='#section-2'>#</a>
       </div>
       <p>Attributes of the command line arguments</p>
     </div>
@@ -172,10 +52,10 @@ it would print out &ldquo;None&rdquo; when casted to a string</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-9'>
+  <div class='section' id='section-3'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-9'>#</a>
+        <a class='octothorpe' href='#section-3'>#</a>
       </div>
       <p>No documentation is really needed because there&rsquo;s already a description
 for every argument</p>
