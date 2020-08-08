@@ -112,6 +112,14 @@ def initArgParser() -> argparse.ArgumentParser:
     )
 
     argParser.add_argument(
+        "-c",
+        "--creator",
+        required=False,
+        help="Sets a different mapper name for all difficulties, in case Quaver username and osu! username are different",
+        type=str
+    )
+
+    argParser.add_argument(
         "-p",
         "--preserve-folder-structure",
         required=False,
@@ -179,6 +187,8 @@ def convertDifficulties(path: str, outputFolder: str, options) -> None:
                 convertedOsu.overallDifficulty = options["od"]
             if options["hp"]:
                 convertedOsu.hpDrainRate = options["hp"]
+            if options["creator"]:
+                convertedOsu.creator = options["creator"]
 
             if options["hitSoundVolume"] or options["sampleset"]:
                 for list in [convertedOsu.bpms.data(), convertedOsu.svs.data()]:
@@ -198,6 +208,7 @@ def convertDifficulties(path: str, outputFolder: str, options) -> None:
             for file in files:
                 newDir.write(os.path.join(root, file), file)
 
+    # Delete all files in output dir
     for root, dirs, files in os.walk(outputPath, topdown=False):
         for name in files:
             os.remove(os.path.join(root, name))
@@ -223,6 +234,8 @@ def main():
         print("Please specify an input! (Paths to directories containing .qp files or .qp files directly)")
         sys.exit(1)
 
+    print(args)
+
     qpFilesInInputDir = []
 
     # Filters for all files that end with .qp and puts the
@@ -246,7 +259,8 @@ def main():
         "od": args["overall_difficulty"],
         "hp": args["hp_drain"],
         "hitSoundVolume": args["hitsound_volume"],
-        "sampleSet": args["sampleset"]
+        "sampleSet": args["sampleset"],
+        "creator": args["creator"]
     }
 
     # Starts the timer for the total execution time
