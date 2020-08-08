@@ -1,8 +1,6 @@
 """Command-line tool for map conversion"""
 
-
 # ## Imports
-
 
 import argparse  # parsing command line arguments
 import os  # for paths and directories
@@ -17,13 +15,11 @@ from reamber.quaver import QuaMap
 
 # ## Constants
 
-
 SAMPLESETS = [
     "Soft",
     "Normal",
     "Drum"
 ]
-
 
 # ## Functions
 
@@ -147,12 +143,10 @@ def searchForQpFiles(directory: str, qpList: list, recursive: bool) -> list:
             searchForQpFiles(fullRelativePath, qpList, recursive)
 
 
-def convertDifficulties(path: str, outputFolder: str, options) -> None:
+def convertQp(path: str, outputFolder: str, options) -> None:
     """Converts a whole .qp mapset to a .osz mapset
 
     Moves all files to a new directory and converts all .qua files to .osu files
-
-    This function is called in the GUI.
 
     Options parameter is built up as following:
 
@@ -217,7 +211,6 @@ def convertDifficulties(path: str, outputFolder: str, options) -> None:
 
     os.rmdir(outputPath)
 
-
 # ### Main
 
 
@@ -230,16 +223,17 @@ def main():
     argParser = initArgParser()
     args = vars(argParser.parse_args())
 
+    # Run help command if no params
     if len(args["input"]) == 0:
-        print("Please specify an input! (Paths to directories containing .qp files or .qp files directly)")
+        argParser.parse_args(["-h"])
         sys.exit(1)
 
     print(args)
 
-    qpFilesInInputDir = []
-
     # Filters for all files that end with .qp and puts the
     # complete path of the files into an array
+
+    qpFilesInInputDir = []
 
     for path in args["input"]:
         if os.path.isfile(path) and path.endswith(".qp"):
@@ -250,11 +244,11 @@ def main():
     print(qpFilesInInputDir)
 
     if len(qpFilesInInputDir) == 0:
-        print("No mapsets found")
+        print("No mapsets found in given paths")
         sys.exit(1)
 
     # Assigns the arguments to an options object to pass to
-    # the `convertMapset()` function
+    # the `convertQp()` function
     options = {
         "od": args["overall_difficulty"],
         "hp": args["hp_drain"],
@@ -275,7 +269,7 @@ def main():
             os.mkdir(outputPath)
 
         print(f"Converting {file}")
-        convertDifficulties(file, outputPath, options)
+        convertQp(file, outputPath, options)
 
     # Stops the timer for the total execution time
     end = time.time()

@@ -267,7 +267,7 @@
       <p>Converts a whole .qp mapset to a .osz mapset</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">convertDifficulties</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">outputFolder</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span></pre></div>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">convertQp</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">outputFolder</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -277,7 +277,6 @@
         <a class='octothorpe' href='#section-12'>#</a>
       </div>
       <p>Moves all files to a new directory and converts all .qua files to .osu files</p>
-<p>This function is called in the GUI.</p>
 <p>Options parameter is built up as following:</p>
 <pre><code>options = {
     "od": int,
@@ -432,15 +431,7 @@ choose the background for whatever reason</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre>    <span class="n">argParser</span> <span class="o">=</span> <span class="n">initArgParser</span><span class="p">()</span>
-    <span class="n">args</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="n">argParser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">())</span>
-
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please specify an input! (Paths to directories containing .qp files or .qp files directly)&quot;</span><span class="p">)</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-
-    <span class="nb">print</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-
-    <span class="n">qpFilesInInputDir</span> <span class="o">=</span> <span class="p">[]</span></pre></div>
+    <span class="n">args</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="n">argParser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">())</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -449,21 +440,14 @@ choose the background for whatever reason</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-22'>#</a>
       </div>
-      <p>Filters for all files that end with .qp and puts the
-complete path of the files into an array</p>
+      <p>Run help command if no params</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">args</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]:</span>
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">and</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.qp&quot;</span><span class="p">):</span>
-            <span class="n">qpFilesInInputDir</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-            <span class="n">searchForQpFiles</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">qpFilesInInputDir</span><span class="p">,</span> <span class="n">args</span><span class="p">[</span><span class="s2">&quot;recursive_search&quot;</span><span class="p">])</span>
+      <div class="highlight"><pre>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">argParser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">([</span><span class="s2">&quot;-h&quot;</span><span class="p">])</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="n">qpFilesInInputDir</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">qpFilesInInputDir</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No mapsets found&quot;</span><span class="p">)</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></pre></div>
+    <span class="nb">print</span><span class="p">(</span><span class="n">args</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -472,8 +456,33 @@ complete path of the files into an array</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-23'>#</a>
       </div>
+      <p>Filters for all files that end with .qp and puts the
+complete path of the files into an array</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">qpFilesInInputDir</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">args</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">and</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.qp&quot;</span><span class="p">):</span>
+            <span class="n">qpFilesInInputDir</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">searchForQpFiles</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">qpFilesInInputDir</span><span class="p">,</span> <span class="n">args</span><span class="p">[</span><span class="s2">&quot;recursive_search&quot;</span><span class="p">])</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">qpFilesInInputDir</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">qpFilesInInputDir</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No mapsets found in given paths&quot;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-24'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-24'>#</a>
+      </div>
       <p>Assigns the arguments to an options object to pass to
-the <code>convertMapset()</code> function</p>
+the <code>convertQp()</code> function</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre>    <span class="n">options</span> <span class="o">=</span> <span class="p">{</span>
@@ -486,10 +495,10 @@ the <code>convertMapset()</code> function</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-24'>
+  <div class='section' id='section-25'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-24'>#</a>
+        <a class='octothorpe' href='#section-25'>#</a>
       </div>
       <p>Starts the timer for the total execution time</p>
     </div>
@@ -498,10 +507,10 @@ the <code>convertMapset()</code> function</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-25'>
+  <div class='section' id='section-26'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-25'>#</a>
+        <a class='octothorpe' href='#section-26'>#</a>
       </div>
       <p>Run the conversion for each .qp file</p>
     </div>
@@ -514,14 +523,14 @@ the <code>convertMapset()</code> function</p>
             <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">outputPath</span><span class="p">)</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Converting </span><span class="si">{file}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">convertDifficulties</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">outputPath</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span></pre></div>
+        <span class="n">convertQp</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">outputPath</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-26'>
+  <div class='section' id='section-27'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-26'>#</a>
+        <a class='octothorpe' href='#section-27'>#</a>
       </div>
       <p>Stops the timer for the total execution time</p>
     </div>
@@ -533,10 +542,10 @@ the <code>convertMapset()</code> function</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-27'>
+  <div class='section' id='section-28'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-27'>#</a>
+        <a class='octothorpe' href='#section-28'>#</a>
       </div>
       <p>Opens output folder in explorer</p>
     </div>
