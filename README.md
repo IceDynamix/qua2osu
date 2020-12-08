@@ -2,6 +2,11 @@
 
 > Converts quaver map files (.qp) to osu! map files (.osz)
 
+Outdated and not maintained anymore, use my rewrite [qua3osu](https://github.com/IceDynamix/qua3osu) instead. Currently doesn't have a GUI yet, but saves a lot of hassle.
+
+<details>
+  <summary>Old content</summary>
+
 ## Screenshot
 
 ![Image of the GUI](https://i.imgur.com/LYwGaVj.png)
@@ -78,3 +83,4 @@ Please report issues [here on github](https://github.com/IceDynamix/qua2osu/issu
 
 - [**Quaver**](https://quavergame.com/)
 - [**osu!**](https://osu.ppy.sh/)
+</details>
